@@ -104,29 +104,73 @@ export default function CRMPage() {
     };
   }, [fetchLeads]);
 
-  const moveCard = async (leadId: string, newStatus: string) => {
+  const moveLead = async (leadId: string, newStatus: string) => {
     try {
-      const tenantId = localStorage.getItem('tenant_id');
-      const role = localStorage.getItem('role');
-
-      let query = supabase
+      const { error } = await supabase
         .from('leads')
-        .update({ status: newStatus as any })
+        .update({ 
+          status: newStatus as any,
+          updated_at: new Date().toISOString()
+        })
         .eq('id', leadId);
 
-      if (role !== 'super_admin' && tenantId) {
-        query = query.eq('tenant_id', tenantId);
-      }
-
-      const { error } = await query;
-      
       if (error) {
-        console.error('Move error:', error.message);
+        console.error('Move lead error:', error.message);
+        alert(`Failed to move lead: ${error.message}`);
         return;
       }
+
+      // If moving to deal_closed — ask to convert to student
+      if (newStatus === 'deal_closed') {
+        const convert = confirm('Convert this lead to a student?');
+        if (convert) {
+          await convertToStudent(leadId);
+        }
+      }
+
       fetchLeads();
-    } catch (error) {
-      console.error('Error moving lead:', error);
+    } catch (err: any) {
+      console.error('Error:', err.message);
+    }
+  };
+
+  const convertToStudent = async (leadId: string) => {
+    try {
+      // Fetch lead data first
+      const { data: lead, error: fetchError } = await supabase
+        .from('leads')
+        .select('*')
+        .eq('id', leadId)
+        .single();
+      
+      if (fetchError || !lead) {
+        alert('Could not find lead data to convert');
+        return;
+      }
+
+      const tenantId = localStorage.getItem('tenant_id');
+
+      // Insert into students table
+      const { error: insertError } = await supabase
+        .from('students')
+        .insert([{
+          full_name: lead.full_name,
+          email: lead.email,
+          phone: lead.phone,
+          course: lead.course_interested,
+          tenant_id: tenantId || lead.tenant_id,
+          status: 'active',
+          join_date: new Date().toISOString().split('T')[0]
+        }]);
+
+      if (insertError) {
+        console.error('Conversion error:', insertError.message);
+        alert(`Failed to convert to student: ${insertError.message}`);
+      } else {
+        alert('Lead successfully converted to student!');
+      }
+    } catch (err: any) {
+      console.error('Error in convertToStudent:', err.message);
     }
   };
 
@@ -288,20 +332,19 @@ export default function CRMPage() {
                               </button>
                               <div className="h-px bg-slate-100 my-1"></div>
                               <button
-                                onClick={() => { moveCard(lead.id, 'follow_up'); setOpenMenuId(null); }}
+                                onClick={() => { moveLead(lead.id, 'follow_up'); setOpenMenuId(null); }}
                                 className="w-full text-left px-4 py-2.5 text-sm text-amber-600 hover:bg-amber-50 flex items-center gap-2 font-medium"
                               >
                                 <ArrowRight className="w-4 h-4" /> Move to Follow Up
                               </button>
                               <button
-                                onClick={() => { moveCard(lead.id, 'deal_closed'); setOpenMenuId(null); }}
+                                onClick={() => { moveLead(lead.id, 'deal_closed'); setOpenMenuId(null); }}
                                 className="w-full text-left px-4 py-2.5 text-sm text-emerald-600 hover:bg-emerald-50 flex items-center gap-2 font-medium"
                               >
                                 <CheckCircle className="w-4 h-4" /> Close Deal
                               </button>
                               <button
-                                onClick={() => { moveCard(lead.id, 'lost'); setOpenMenuId(null); }}
-                                className="w-full text-left px-4 py-2.5 text-sm text-slate-500 hover:bg-slate-50 flex items-center gap-2 font-medium"
+                                onClick={() => { moveLead(lead.id, 'lost'); setOpenMenuId(null); }}                                className="w-full text-left px-4 py-2.5 text-sm text-slate-500 hover:bg-slate-50 flex items-center gap-2 font-medium"
                               >
                                 <XCircle className="w-4 h-4" /> Mark as Lost
                               </button>
@@ -329,6 +372,46 @@ export default function CRMPage() {
                             <BookOpen className="w-3 h-3" />
                             {lead.course_interested}
                           </div>
+                        )}
+                      </div>
+
+                      {/* Move buttons */}
+                      <div className="flex gap-2 mt-2 flex-wrap">
+                        {lead.status !== 'new_enquiry' && (
+                          <button
+                            type="button"
+                            onClick={(e) => { e.stopPropagation(); moveLead(lead.id, 'new_enquiry'); }}
+                            className="text-[9px] font-bold px-2 py-1 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-100 transition-colors uppercase tracking-wider"
+                          >
+                            ← New
+                          </button>
+                        )}
+                        {lead.status !== 'follow_up' && (
+                          <button
+                            type="button"
+                            onClick={(e) => { e.stopPropagation(); moveLead(lead.id, 'follow_up'); }}
+                            className="text-[9px] font-bold px-2 py-1 bg-amber-50 text-amber-600 rounded-lg hover:bg-amber-100 transition-colors uppercase tracking-wider"
+                          >
+                            Follow Up →
+                          </button>
+                        )}
+                        {lead.status !== 'deal_closed' && (
+                          <button
+                            type="button"
+                            onClick={(e) => { e.stopPropagation(); moveLead(lead.id, 'deal_closed'); }}
+                            className="text-[9px] font-bold px-2 py-1 bg-emerald-50 text-emerald-600 rounded-lg hover:bg-emerald-100 transition-colors uppercase tracking-wider"
+                          >
+                            Close Deal ✓
+                          </button>
+                        )}
+                        {lead.status !== 'lost' && (
+                          <button
+                            type="button"
+                            onClick={(e) => { e.stopPropagation(); moveLead(lead.id, 'lost'); }}
+                            className="text-[9px] font-bold px-2 py-1 bg-rose-50 text-rose-600 rounded-lg hover:bg-rose-100 transition-colors uppercase tracking-wider"
+                          >
+                            Lost ✗
+                          </button>
                         )}
                       </div>
 

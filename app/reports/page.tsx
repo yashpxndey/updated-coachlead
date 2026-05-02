@@ -325,7 +325,13 @@ export default function ReportsPage() {
           overallRating: reportRecord.performance_rating,
           manual_present: reportRecord.manual_present || 0,
           manual_absent: reportRecord.manual_absent || 0,
-          manual_late: reportRecord.manual_late || 0
+          manual_late: reportRecord.manual_late || 0,
+          curriculum_matrix: reportRecord.curriculum_matrix || '',
+          competency_peaks: reportRecord.competency_peaks || '',
+          development_focus: reportRecord.development_focus || '',
+          assignment_compliance: reportRecord.assignment_compliance || '',
+          behavioral_abstract: reportRecord.behavioral_abstract || '',
+          final_narrative_audit: reportRecord.final_narrative_audit || ''
         } : {
           remarks: '',
           behavior: 'Good',
@@ -334,7 +340,13 @@ export default function ReportsPage() {
           overallRating: 'Good',
           manual_present: 0,
           manual_absent: 0,
-          manual_late: 0
+          manual_late: 0,
+          curriculum_matrix: '',
+          competency_peaks: '',
+          development_focus: '',
+          assignment_compliance: '',
+          behavioral_abstract: '',
+          final_narrative_audit: ''
         }
       };
 
@@ -482,6 +494,55 @@ export default function ReportsPage() {
       const message = err instanceof Error ? err.message : JSON.stringify(err);
       console.error('Caught error:', message);
       alert(`Error: ${message}`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleInitializeMetric = async () => {
+    if (!selectedStudentId) {
+      alert('Please select a student first');
+      return;
+    }
+
+    const student = students.find(s => s.id === selectedStudentId);
+    const tenantId = localStorage.getItem('tenant_id');
+
+    setIsLoading(true);
+    try {
+      const { error } = await supabase
+        .from('reports')
+        .upsert({
+          student_id: selectedStudentId,
+          student_name: student?.full_name,
+          tenant_id: tenantId,
+          month: monthToNumber(selectedMonth),
+          year: parseInt(selectedYear),
+          teacher_remarks: '',
+          behavior_rating: 'Good',
+          performance_rating: 'Good',
+          assignment_rate: 0,
+          curriculum_matrix: '',
+          competency_peaks: '',
+          development_focus: '',
+          assignment_compliance: '',
+          behavioral_abstract: '',
+          final_narrative_audit: '',
+          manual_present: 0,
+          manual_absent: 0,
+          manual_late: 0
+        });
+
+      if (error) {
+        console.error('Initialize error:', error.message);
+        alert(`Failed: ${error.message}`);
+        return;
+      }
+
+      await fetchReportData();
+      alert('Report initialized successfully!');
+    } catch (err: any) {
+      console.error('Error:', err.message);
     } finally {
       setIsLoading(false);
     }
@@ -645,6 +706,12 @@ export default function ReportsPage() {
         manual_present: editedData.additional.manual_present,
         manual_absent: editedData.additional.manual_absent,
         manual_late: editedData.additional.manual_late,
+        curriculum_matrix: editedData.additional.curriculum_matrix || '',
+        competency_peaks: editedData.additional.competency_peaks || '',
+        development_focus: editedData.additional.development_focus || '',
+        assignment_compliance: editedData.additional.assignment_compliance || '',
+        behavioral_abstract: editedData.additional.behavioral_abstract || '',
+        final_narrative_audit: editedData.additional.final_narrative_audit || '',
         tenant_id: tenantId
       };
 
@@ -849,6 +916,35 @@ export default function ReportsPage() {
       });
 
       currentY = (doc as any).lastAutoTable.finalY + 15;
+
+      // New Analytics Sections
+      const analyticsSections = [
+        { title: 'CURRICULUM MATRIX ANALYSIS', content: reportData.additional.curriculum_matrix },
+        { title: 'COMPETENCY PEAKS', content: reportData.additional.competency_peaks },
+        { title: 'DEVELOPMENT FOCUS', content: reportData.additional.development_focus },
+        { title: 'ASSIGNMENT COMPLIANCE', content: reportData.additional.assignment_compliance },
+        { title: 'BEHAVIORAL ABSTRACT', content: reportData.additional.behavioral_abstract },
+        { title: 'FINAL NARRATIVE AUDIT', content: reportData.additional.final_narrative_audit }
+      ];
+
+      analyticsSections.forEach((section) => {
+        if (section.content) {
+          if (currentY > 250) {
+            doc.addPage();
+            currentY = 20;
+          }
+          doc.setFontSize(14);
+          doc.setFont('helvetica', 'bold');
+          doc.text(section.title, 14, currentY);
+          
+          doc.setFontSize(10);
+          doc.setFont('helvetica', 'normal');
+          doc.setTextColor(50, 50, 50);
+          const splitContent = doc.splitTextToSize(section.content, pageWidth - 28);
+          doc.text(splitContent, 14, currentY + 6);
+          currentY += (splitContent.length * 5) + 15;
+        }
+      });
 
       // Fee Summary Section
       doc.setFontSize(14);
@@ -1545,19 +1641,140 @@ export default function ReportsPage() {
               </p>
             </div>
             <button 
-              onClick={() => {
-                setEditedData(JSON.parse(JSON.stringify({
-                  ...reportData,
-                  marks: [],
-                  additional: { remarks: '', behavior: 'Good', assignmentRate: 0, extracurricular: '', overallRating: 'Good', manual_present: 0, manual_absent: 0, manual_late: 0 }
-                })));
-                setIsModalOpen(true);
-              }}
+              onClick={handleInitializeMetric}
               className="btn-primary px-8"
             >
               Initialize Monthly Report
             </button>
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Test Score Modal */}
+      <AnimatePresence>
+        {isScoreModalOpen && (
+          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm shadow-2xl">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="card-geometric w-full max-w-md p-8 bg-white relative"
+            >
+              <button 
+                onClick={() => setIsScoreModalOpen(false)}
+                className="absolute top-6 right-6 p-2 hover:bg-slate-100 rounded-xl transition-colors text-slate-400"
+              >
+                <X className="w-5 h-5" />
+              </button>
+
+              <div className="flex items-center gap-3 mb-8">
+                <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-100">
+                  <TrendingUp className="w-5 h-5 text-white" />
+                </div>
+                <h3 className="text-2xl font-black text-slate-900 tracking-tight">
+                  {editingScoreId ? 'Update Metric' : 'New Metric Entry'}
+                </h3>
+              </div>
+              
+              <form onSubmit={handleScoreSubmit} className="space-y-6">
+                <div>
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block ml-1 mb-1.5">Module Designation</label>
+                  <input 
+                    type="text"
+                    required
+                    value={scoreForm.subject_name}
+                    onChange={(e) => setScoreForm({ ...scoreForm, subject_name: e.target.value })}
+                    className="input-field w-full bg-slate-50 border-slate-200"
+                    placeholder="e.g. Fundamental Mathematics"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block ml-1 mb-1.5">Batch Category</label>
+                  <select 
+                    value={scoreForm.exam_type}
+                    onChange={(e) => setScoreForm({ ...scoreForm, exam_type: e.target.value })}
+                    className="input-field w-full bg-slate-50 border-slate-200 font-bold text-slate-900"
+                  >
+                    <option value="Unit Test">Unit Test</option>
+                    <option value="Mid Term">Mid Term</option>
+                    <option value="Final Exam">Final Exam</option>
+                  </select>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block ml-1 mb-1.5">Metric Ceiling</label>
+                    <input 
+                      type="number"
+                      required
+                      min="1"
+                      value={scoreForm.max_marks}
+                      onChange={(e) => setScoreForm({ ...scoreForm, max_marks: parseInt(e.target.value) || 0 })}
+                      className="input-field w-full bg-slate-50 border-slate-200 font-mono font-bold"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block ml-1 mb-1.5">Achieved Magnitude</label>
+                    <input 
+                      type="number"
+                      required
+                      min="0"
+                      max={scoreForm.max_marks}
+                      value={scoreForm.marks_obtained}
+                      onChange={(e) => setScoreForm({ ...scoreForm, marks_obtained: parseInt(e.target.value) || 0 })}
+                      className="input-field w-full bg-slate-50 border-slate-200 font-mono font-bold text-indigo-600"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block ml-1 mb-1.5">Reporting Month</label>
+                    <select 
+                      value={scoreForm.month}
+                      onChange={(e) => setScoreForm({ ...scoreForm, month: parseInt(e.target.value) })}
+                      className="input-field w-full bg-slate-50 border-slate-200 font-bold"
+                    >
+                      {MONTHS.map((m, i) => (
+                        <option key={m} value={i + 1}>{m}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block ml-1 mb-1.5">Archive Year</label>
+                    <select 
+                      value={scoreForm.year}
+                      onChange={(e) => setScoreForm({ ...scoreForm, year: parseInt(e.target.value) })}
+                      className="input-field w-full bg-slate-50 border-slate-200 font-bold"
+                    >
+                      {YEARS.map(y => (
+                        <option key={y} value={parseInt(y)}>{y}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="flex justify-end gap-3 pt-6 border-t border-slate-100">
+                  <button 
+                    type="button" 
+                    onClick={() => setIsScoreModalOpen(false)} 
+                    className="btn-secondary px-6"
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    type="submit" 
+                    disabled={isLoading}
+                    className="btn-primary px-8 shadow-lg shadow-indigo-100 font-bold uppercase tracking-widest text-[11px]"
+                  >
+                    {isLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                    {editingScoreId ? 'Synchronize Metric' : 'Commit Entry'}
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
 
@@ -1646,6 +1863,72 @@ export default function ReportsPage() {
                         />
                       </div>
                     </div>
+                  </div>
+                </div>
+
+                {/* Curriculum Matrix Analysis */}
+                <div className="space-y-6 pt-6 border-t border-slate-100">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-3">
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block ml-1">Curriculum Matrix Analysis</label>
+                      <textarea 
+                        value={editedData.additional.curriculum_matrix}
+                        onChange={(e) => handleAdditionalChange('curriculum_matrix', e.target.value)}
+                        className="input-field w-full min-h-[100px] bg-slate-50 border-slate-200 p-4 text-slate-900 font-medium font-sans" 
+                        placeholder="Enter curriculum matrix analysis..."
+                      />
+                    </div>
+                    <div className="space-y-3">
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block ml-1">Competency Peaks</label>
+                      <textarea 
+                        value={editedData.additional.competency_peaks}
+                        onChange={(e) => handleAdditionalChange('competency_peaks', e.target.value)}
+                        className="input-field w-full min-h-[100px] bg-slate-50 border-slate-200 p-4 text-slate-900 font-medium font-sans" 
+                        placeholder="Enter competency peaks..."
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-3">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block ml-1">Development Focus</label>
+                    <textarea 
+                      value={editedData.additional.development_focus}
+                      onChange={(e) => handleAdditionalChange('development_focus', e.target.value)}
+                      className="input-field w-full min-h-[80px] bg-slate-50 border-slate-200 p-4 text-slate-900 font-medium font-sans" 
+                      placeholder="Enter development focus areas..."
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-6 pt-6 border-t border-slate-100">
+                  <h3 className="text-sm font-bold text-slate-900 uppercase tracking-widest">Metric Detail Matrix</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-3">
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block ml-1">Assignment Compliance</label>
+                      <textarea 
+                        value={editedData.additional.assignment_compliance}
+                        onChange={(e) => handleAdditionalChange('assignment_compliance', e.target.value)}
+                        className="input-field w-full min-h-[80px] bg-slate-50 border-slate-200 p-4 text-slate-900 font-medium font-sans" 
+                        placeholder="Enter assignment compliance details..."
+                      />
+                    </div>
+                    <div className="space-y-3">
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block ml-1">Behavioral Abstract</label>
+                      <textarea 
+                        value={editedData.additional.behavioral_abstract}
+                        onChange={(e) => handleAdditionalChange('behavioral_abstract', e.target.value)}
+                        className="input-field w-full min-h-[80px] bg-slate-50 border-slate-200 p-4 text-slate-900 font-medium font-sans" 
+                        placeholder="Enter behavioral abstract..."
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-3">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block ml-1">Final Narrative Audit</label>
+                    <textarea 
+                      value={editedData.additional.final_narrative_audit}
+                      onChange={(e) => handleAdditionalChange('final_narrative_audit', e.target.value)}
+                      className="input-field w-full min-h-[100px] bg-slate-50 border-slate-200 p-4 text-slate-900 font-medium font-sans" 
+                      placeholder="Enter final narrative audit..."
+                    />
                   </div>
                 </div>
 
