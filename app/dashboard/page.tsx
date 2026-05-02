@@ -291,7 +291,7 @@ export default function DashboardPage() {
                     <Tooltip 
                       contentStyle={{ backgroundColor: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
                       itemStyle={{ color: '#1e293b' }}
-                      formatter={(value: any, name: string | undefined) => name === 'revenue' ? [`₹${value.toLocaleString()}`, 'Revenue'] : [value, name]}
+                      formatter={(value: any, name: any) => name === 'revenue' ? [`₹${value.toLocaleString()}`, 'Revenue'] : [value, name]}
                     />
                     <Area type="monotone" dataKey="revenue" stroke="#4f46e5" fillOpacity={1} fill="url(#colorRev)" strokeWidth={3} />
                   </AreaChart>
