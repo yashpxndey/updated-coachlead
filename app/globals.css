@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #0f172a; /* slate-900 */
+  --color-secondary: #f8fafc; /* slate-50 */
+  --color-accent: #4f46e5; /* indigo-600 */
+  --color-border: #e2e8f0; /* slate-200 */
+  --color-text-main: #0f172a; /* slate-900 */
+  --color-text-muted: #64748b; /* slate-500 */
+}
+
+:root {
+  --background: #f8fafc;
+  --foreground: #0f172a;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: 'Inter', sans-serif;
+}
+
+@layer base {
+  * {
+    @apply border-slate-200;
+  }
+}
+
+.card-geometric {
+  @apply bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md transition-shadow;
+}
+
+.btn-primary {
+  @apply bg-accent hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition-all font-medium flex items-center justify-center gap-2 shadow-sm;
+}
+
+.btn-secondary {
+  @apply bg-white hover:bg-slate-50 text-slate-600 px-4 py-2 rounded-lg transition-all font-medium flex items-center justify-center gap-2 border border-slate-200;
+}
+
+.input-field {
+  @apply bg-white border border-slate-200 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all text-slate-900 placeholder:text-slate-400;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  @apply bg-slate-50;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-300 rounded-full hover:bg-slate-400;
+}
