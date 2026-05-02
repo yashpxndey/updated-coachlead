@@ -299,11 +299,10 @@ export default function AttendancePage() {
               <div className="space-y-2">
                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Select Department</label>
                 <div className="relative">
-                  <Building className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none z-10" />
                   <select 
                     value={selectedClass}
                     onChange={(e) => setSelectedClass(e.target.value)}
-                    className="input-field w-full pl-10 bg-white text-slate-900 font-medium"
+                    className="input-field w-full bg-white text-slate-900 font-medium"
                   >
                     {courses.map(course => (
                       <option key={course.id} value={course.course_name}>{course.course_name}</option>
@@ -314,10 +313,9 @@ export default function AttendancePage() {
               <div className="space-y-2">
                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Session Date</label>
                 <div className="relative">
-                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none z-10" />
                   <input 
                     type="date" 
-                    className="input-field w-full pl-10 bg-white text-slate-900" 
+                    className="input-field w-full bg-white text-slate-900" 
                     value={selectedDate}
                     onChange={(e) => setSelectedDate(e.target.value)}
                     disabled={isLocked} 
@@ -337,8 +335,8 @@ export default function AttendancePage() {
 
             <div className="card-geometric overflow-hidden">
               <div className="p-4 border-b border-slate-100 flex items-center justify-between gap-4">
-                <div className="relative flex-1 max-w-md">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none z-10" />
+                <div className="relative flex-1 max-w-md flex items-center">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none z-10 shrink-0" />
                   <input 
                     type="text" 
                     placeholder="Search enrolled students..." 

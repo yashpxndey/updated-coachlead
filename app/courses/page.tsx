@@ -167,14 +167,14 @@ export default function CoursesPage() {
         </div>
 
         <div className="flex flex-col sm:flex-row gap-4">
-          <div className="relative flex-1 group">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-indigo-600 transition-colors pointer-events-none z-10" />
+          <div className="relative flex-1 group flex items-center">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-indigo-600 transition-colors pointer-events-none z-10 shrink-0" />
             <input
               type="text"
               placeholder="Search by course descriptor..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="input-field pl-12 py-3 bg-white border-slate-200 focus:ring-indigo-500 w-full"
+              className="input-field pl-10 py-3 bg-white border-slate-200 focus:ring-indigo-500 w-full"
             />
           </div>
         </div>

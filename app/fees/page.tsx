@@ -415,9 +415,8 @@ export default function FeesPage() {
             </div>
             <div className="flex flex-col md:flex-row gap-4">
               <div className="relative group">
-                <Building className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-indigo-600 transition-colors pointer-events-none z-10" />
                 <select 
-                  className="input-field pl-10 py-2.5 text-sm appearance-none pr-10 bg-white border-slate-200 font-medium"
+                  className="input-field py-2.5 text-sm appearance-none pr-10 bg-white border-slate-200 font-medium"
                   value={selectedCourse}
                   onChange={(e) => setSelectedCourse(e.target.value)}
                 >
@@ -427,8 +426,8 @@ export default function FeesPage() {
                   ))}
                 </select>
               </div>
-              <div className="relative group">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-indigo-600 transition-colors pointer-events-none z-10" />
+              <div className="relative group flex items-center">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-indigo-600 transition-colors pointer-events-none z-10 shrink-0" />
                 <input 
                   type="text" 
                   placeholder="Seach by student name..." 

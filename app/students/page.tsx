@@ -364,12 +364,12 @@ export default function StudentsPage() {
         {/* Filters & Search */}
         <div className="space-y-4">
           <div className="card-geometric p-4 flex flex-col md:flex-row gap-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none z-10" />
+            <div className="relative flex-1 flex items-center">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none z-10 shrink-0" />
               <input 
                 type="text" 
                 placeholder="Search by name, registration no., or email..." 
-                className="input-field w-full pl-11"
+                className="input-field w-full pl-10"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -623,8 +623,7 @@ export default function StudentsPage() {
                     <div className="space-y-1.5">
                       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Date of Birth</label>
                       <div className="relative">
-                        <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none z-10" />
-                        <input name="date_of_birth" type="date" required defaultValue={editingStudent?.date_of_birth || ''} className="input-field w-full pl-10" />
+                        <input name="date_of_birth" type="date" required defaultValue={editingStudent?.date_of_birth || ''} className="input-field w-full" />
                       </div>
                     </div>
                     <div className="space-y-1.5">
@@ -669,8 +668,7 @@ export default function StudentsPage() {
                     <div className="space-y-1.5">
                       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Enrolled Course</label>
                       <div className="relative">
-                        <Building className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none z-10" />
-                        <select name="course_name" required defaultValue={editingStudent?.course_name} className="input-field w-full pl-10 bg-slate-50 text-slate-900 font-medium">
+                        <select name="course_name" required defaultValue={editingStudent?.course_name} className="input-field w-full bg-slate-50 text-slate-900 font-medium">
                           <option value="">Select Course</option>
                           {courses.map(course => (
                             <option key={course.id} value={course.course_name}>{course.course_name}</option>
@@ -685,8 +683,7 @@ export default function StudentsPage() {
                     <div className="space-y-1.5">
                       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Join Date</label>
                       <div className="relative">
-                        <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none z-10" />
-                        <input name="joining_date" type="date" required defaultValue={editingStudent?.joining_date || ''} className="input-field w-full pl-10" />
+                        <input name="joining_date" type="date" required defaultValue={editingStudent?.joining_date || ''} className="input-field w-full" />
                       </div>
                     </div>
                   </div>
