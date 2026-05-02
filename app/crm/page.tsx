@@ -108,69 +108,95 @@ export default function CRMPage() {
     try {
       const { error } = await supabase
         .from('leads')
-        .update({ 
+        .update({
           status: newStatus as any,
           updated_at: new Date().toISOString()
         })
         .eq('id', leadId);
 
       if (error) {
-        console.error('Move lead error:', error.message);
-        alert(`Failed to move lead: ${error.message}`);
+        alert(`Failed: ${error.message}`);
         return;
       }
 
-      // If moving to deal_closed — ask to convert to student
       if (newStatus === 'deal_closed') {
-        const convert = confirm('Convert this lead to a student?');
+        const convert = confirm(
+          'Lead moved to Deal Closed! Convert this lead to a student now?'
+        );
         if (convert) {
           await convertToStudent(leadId);
+          return;
         }
       }
 
       fetchLeads();
     } catch (err: any) {
-      console.error('Error:', err.message);
+      alert(`Error: ${err.message}`);
     }
   };
 
   const convertToStudent = async (leadId: string) => {
     try {
-      // Fetch lead data first
-      const { data: lead, error: fetchError } = await supabase
-        .from('leads')
-        .select('*')
-        .eq('id', leadId)
-        .single();
-      
-      if (fetchError || !lead) {
-        alert('Could not find lead data to convert');
+      const lead = leads.find(l => l.id === leadId);
+      if (!lead) {
+        alert('Lead not found');
         return;
       }
 
       const tenantId = localStorage.getItem('tenant_id');
+      if (!tenantId || tenantId === 'null') {
+        alert('No tenant found. Please login again.');
+        return;
+      }
 
-      // Insert into students table
-      const { error: insertError } = await supabase
+      console.log('Converting lead to student:', lead);
+
+      const { data: student, error: studentError } = await supabase
         .from('students')
         .insert([{
+          tenant_id: tenantId,
           full_name: lead.full_name,
-          email: lead.email,
           phone: lead.phone,
-          course: lead.course_interested,
-          tenant_id: tenantId || lead.tenant_id,
+          email: lead.email,
+          course_name: lead.course_interested,
+          enrollment_number: `ENR-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+          joining_date: new Date().toISOString().split('T')[0],
           status: 'active',
-          join_date: new Date().toISOString().split('T')[0]
-        }]);
+          notes: `Converted from CRM lead. Source: ${lead.source}`
+        }])
+        .select()
+        .single();
 
-      if (insertError) {
-        console.error('Conversion error:', insertError.message);
-        alert(`Failed to convert to student: ${insertError.message}`);
-      } else {
-        alert('Lead successfully converted to student!');
+      if (studentError) {
+        console.error('Student insert error:', studentError.message, studentError.details);
+        alert(`Failed to convert: ${studentError.message}`);
+        return;
       }
+
+      console.log('Student created:', student);
+
+      // Update lead with converted student id
+      const { error: leadError } = await supabase
+        .from('leads')
+        .update({
+          status: 'deal_closed',
+          // Note: If you add converted_student_id column to leads table later, it will store here.
+          // For now, we just ensure status is set.
+        })
+        .eq('id', leadId);
+
+      if (leadError) {
+        console.error('Lead update error:', leadError.message);
+      }
+
+      alert(`✅ ${lead.full_name} converted to student successfully!`);
+
+      // Redirect to students page
+      window.location.href = '/students';
+
     } catch (err: any) {
-      console.error('Error in convertToStudent:', err.message);
+      console.error('Conversion error:', err.message);
+      alert(`Error: ${err.message}`);
     }
   };
 

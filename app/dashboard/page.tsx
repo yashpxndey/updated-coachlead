@@ -12,7 +12,13 @@ import {
   Bell, 
   TrendingUp,
   Clock,
-  Globe
+  Globe,
+  Plus,
+  UserPlus,
+  ClipboardList,
+  FileText,
+  PlusCircle,
+  CreditCard
 } from 'lucide-react';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -64,6 +70,10 @@ export default function DashboardPage() {
   });
   const [revenueData, setRevenueData] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  const handleQuickAction = (path: string) => {
+    router.push(path);
+  };
 
   const fetchDashboardData = async () => {
     try {
@@ -229,6 +239,70 @@ export default function DashboardPage() {
               <span className="absolute top-2 right-2 w-3 h-3 bg-red-500 rounded-full border-2 border-white" />
             )}
           </Link>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          <button 
+            type="button" 
+            onClick={() => handleQuickAction('/students')}
+            className="flex flex-col items-center gap-3 p-6 bg-white border border-slate-200 rounded-2xl hover:bg-slate-50 transition-all group shadow-sm"
+          >
+            <div className="w-12 h-12 rounded-xl bg-indigo-50 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <UserPlus className="w-6 h-6 text-indigo-600" />
+            </div>
+            <span className="text-xs font-bold text-slate-600 uppercase tracking-wider">Add Student</span>
+          </button>
+          <button 
+            type="button" 
+            onClick={() => handleQuickAction('/attendance')}
+            className="flex flex-col items-center gap-3 p-6 bg-white border border-slate-200 rounded-2xl hover:bg-slate-50 transition-all group shadow-sm"
+          >
+            <div className="w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <ClipboardList className="w-6 h-6 text-amber-600" />
+            </div>
+            <span className="text-xs font-bold text-slate-600 uppercase tracking-wider">Mark Attendance</span>
+          </button>
+          <button 
+            type="button" 
+            onClick={() => handleQuickAction('/fees')}
+            className="flex flex-col items-center gap-3 p-6 bg-white border border-slate-200 rounded-2xl hover:bg-slate-50 transition-all group shadow-sm"
+          >
+            <div className="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <CreditCard className="w-6 h-6 text-emerald-600" />
+            </div>
+            <span className="text-xs font-bold text-slate-600 uppercase tracking-wider">Record Fee</span>
+          </button>
+          <button 
+            type="button" 
+            onClick={() => handleQuickAction('/crm')}
+            className="flex flex-col items-center gap-3 p-6 bg-white border border-slate-200 rounded-2xl hover:bg-slate-50 transition-all group shadow-sm"
+          >
+            <div className="w-12 h-12 rounded-xl bg-purple-50 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <PlusCircle className="w-6 h-6 text-purple-600" />
+            </div>
+            <span className="text-xs font-bold text-slate-600 uppercase tracking-wider">Add Lead</span>
+          </button>
+          <button 
+            type="button" 
+            onClick={() => handleQuickAction('/reports')}
+            className="flex flex-col items-center gap-3 p-6 bg-white border border-slate-200 rounded-2xl hover:bg-slate-50 transition-all group shadow-sm"
+          >
+            <div className="w-12 h-12 rounded-xl bg-rose-50 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <FileText className="w-6 h-6 text-rose-600" />
+            </div>
+            <span className="text-xs font-bold text-slate-600 uppercase tracking-wider">View Reports</span>
+          </button>
+          <button 
+            type="button" 
+            onClick={() => handleQuickAction('/courses')}
+            className="flex flex-col items-center gap-3 p-6 bg-white border border-slate-200 rounded-2xl hover:bg-slate-50 transition-all group shadow-sm"
+          >
+            <div className="w-12 h-12 rounded-xl bg-orange-50 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <Plus className="w-6 h-6 text-orange-600" />
+            </div>
+            <span className="text-xs font-bold text-slate-600 uppercase tracking-wider">Add Course</span>
+          </button>
         </div>
 
         {/* Stats Grid */}

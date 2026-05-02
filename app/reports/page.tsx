@@ -1533,13 +1533,19 @@ export default function ReportsPage() {
                       />
                     ) : (
                       <div className="flex items-center gap-3 flex-1 max-w-[200px] ml-8">
-                        <div className="flex-1 h-2 bg-slate-200 rounded-full overflow-hidden">
+                        <div className="flex-1 h-3 bg-slate-200 rounded-full overflow-hidden">
                           <div 
-                            className="h-full bg-indigo-600 rounded-full transition-all duration-1000" 
-                            style={{ width: `${reportData.additional.assignmentRate}%` }} 
+                            className={`h-full rounded-full transition-all duration-1000 ${
+                              (reportData.additional.assignmentRate || 0) >= 75
+                                ? 'bg-emerald-500'
+                                : (reportData.additional.assignmentRate || 0) >= 50
+                                ? 'bg-amber-500'
+                                : 'bg-rose-500'
+                            }`} 
+                            style={{ width: `${Math.min(reportData.additional.assignmentRate || 0, 100)}%` }} 
                           />
                         </div>
-                        <span className="text-[11px] font-black text-slate-900 font-mono">{reportData.additional.assignmentRate}%</span>
+                        <span className="text-[11px] font-black text-slate-900 font-mono">{reportData.additional.assignmentRate || 0}%</span>
                       </div>
                     )}
                   </div>
@@ -1902,14 +1908,42 @@ export default function ReportsPage() {
                 <div className="space-y-6 pt-6 border-t border-slate-100">
                   <h3 className="text-sm font-bold text-slate-900 uppercase tracking-widest">Metric Detail Matrix</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-3">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block ml-1">Assignment Compliance</label>
-                      <textarea 
-                        value={editedData.additional.assignment_compliance}
-                        onChange={(e) => handleAdditionalChange('assignment_compliance', e.target.value)}
-                        className="input-field w-full min-h-[80px] bg-slate-50 border-slate-200 p-4 text-slate-900 font-medium font-sans" 
-                        placeholder="Enter assignment compliance details..."
-                      />
+                    <div className="space-y-4">
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block ml-1">Assignment Compliance Score (0-100)</label>
+                        <div className="flex items-center gap-4">
+                          <input 
+                            type="number" 
+                            min="0"
+                            max="100"
+                            value={editedData.additional.assignmentRate}
+                            onChange={(e) => handleAdditionalChange('assignmentRate', Math.min(100, Math.max(0, parseInt(e.target.value) || 0)))}
+                            className="w-24 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-mono font-black text-indigo-600 focus:ring-2 focus:ring-indigo-500/20 outline-none" 
+                            placeholder="0-100"
+                          />
+                          <div className="flex-1 h-3 bg-slate-100 rounded-full overflow-hidden">
+                            <div 
+                              className={`h-full rounded-full transition-all duration-500 ${
+                                (editedData.additional.assignmentRate || 0) >= 75
+                                  ? 'bg-emerald-500'
+                                  : (editedData.additional.assignmentRate || 0) >= 50
+                                  ? 'bg-amber-500'
+                                  : 'bg-rose-500'
+                              }`}
+                              style={{ width: `${Math.min(editedData.additional.assignmentRate || 0, 100)}%` }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block ml-1">Assignment Compliance Details</label>
+                        <textarea 
+                          value={editedData.additional.assignment_compliance}
+                          onChange={(e) => handleAdditionalChange('assignment_compliance', e.target.value)}
+                          className="input-field w-full min-h-[80px] bg-slate-50 border-slate-200 p-4 text-slate-900 font-medium font-sans" 
+                          placeholder="Enter assignment compliance details..."
+                        />
+                      </div>
                     </div>
                     <div className="space-y-3">
                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block ml-1">Behavioral Abstract</label>
