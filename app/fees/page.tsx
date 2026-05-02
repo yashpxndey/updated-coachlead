@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import DashboardLayout from '@/components/dashboard-layout';
-import { CreditCard, IndianRupee, AlertTriangle, CheckCircle2, FileText, Download, Plus, Search, X, Info, Filter } from 'lucide-react';
+import { CreditCard, IndianRupee, AlertTriangle, CheckCircle2, Building, FileText, Download, Plus, Search, X, Info, Filter } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -415,7 +415,7 @@ export default function FeesPage() {
             </div>
             <div className="flex flex-col md:flex-row gap-4">
               <div className="relative group">
-                <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-indigo-600 transition-colors" />
+                <Building className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-indigo-600 transition-colors pointer-events-none z-10" />
                 <select 
                   className="input-field pl-10 py-2.5 text-sm appearance-none pr-10 bg-white border-slate-200 font-medium"
                   value={selectedCourse}
@@ -428,7 +428,7 @@ export default function FeesPage() {
                 </select>
               </div>
               <div className="relative group">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-indigo-600 transition-colors" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-indigo-600 transition-colors pointer-events-none z-10" />
                 <input 
                   type="text" 
                   placeholder="Seach by student name..." 

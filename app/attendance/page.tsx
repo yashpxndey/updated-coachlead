@@ -8,6 +8,7 @@ import {
   QrCode, 
   UserCheck, 
   Calendar, 
+  Building,
   Search, 
   CheckCircle2, 
   XCircle, 
@@ -297,11 +298,12 @@ export default function AttendancePage() {
             <div className="card-geometric p-6 grid grid-cols-1 md:grid-cols-4 gap-6 items-end bg-slate-50/50">
               <div className="space-y-2">
                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Select Department</label>
-                <div className="flex gap-2">
+                <div className="relative">
+                  <Building className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none z-10" />
                   <select 
                     value={selectedClass}
                     onChange={(e) => setSelectedClass(e.target.value)}
-                    className="input-field w-full bg-white text-slate-900 font-medium"
+                    className="input-field w-full pl-10 bg-white text-slate-900 font-medium"
                   >
                     {courses.map(course => (
                       <option key={course.id} value={course.course_name}>{course.course_name}</option>
@@ -311,13 +313,16 @@ export default function AttendancePage() {
               </div>
               <div className="space-y-2">
                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Session Date</label>
-                <input 
-                  type="date" 
-                  className="input-field w-full bg-white text-slate-900" 
-                  value={selectedDate}
-                  onChange={(e) => setSelectedDate(e.target.value)}
-                  disabled={isLocked} 
-                />
+                <div className="relative">
+                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none z-10" />
+                  <input 
+                    type="date" 
+                    className="input-field w-full pl-10 bg-white text-slate-900" 
+                    value={selectedDate}
+                    onChange={(e) => setSelectedDate(e.target.value)}
+                    disabled={isLocked} 
+                  />
+                </div>
               </div>
               <div className="flex gap-2">
                 <button onClick={fetchData} className="btn-secondary flex-1 shadow-sm font-bold">Refresh Data</button>
@@ -333,7 +338,7 @@ export default function AttendancePage() {
             <div className="card-geometric overflow-hidden">
               <div className="p-4 border-b border-slate-100 flex items-center justify-between gap-4">
                 <div className="relative flex-1 max-w-md">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none z-10" />
                   <input 
                     type="text" 
                     placeholder="Search enrolled students..." 

@@ -18,6 +18,7 @@ import {
   X, 
   User, 
   Users,
+  Building,
   MapPin, 
   Clock, 
   Droplets, 
@@ -364,7 +365,7 @@ export default function StudentsPage() {
         <div className="space-y-4">
           <div className="card-geometric p-4 flex flex-col md:flex-row gap-4">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none z-10" />
               <input 
                 type="text" 
                 placeholder="Search by name, registration no., or email..." 
@@ -621,7 +622,10 @@ export default function StudentsPage() {
                     </div>
                     <div className="space-y-1.5">
                       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Date of Birth</label>
-                      <input name="date_of_birth" type="date" required defaultValue={editingStudent?.date_of_birth || ''} className="input-field w-full" />
+                      <div className="relative">
+                        <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none z-10" />
+                        <input name="date_of_birth" type="date" required defaultValue={editingStudent?.date_of_birth || ''} className="input-field w-full pl-10" />
+                      </div>
                     </div>
                     <div className="space-y-1.5">
                       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Gender</label>
@@ -664,12 +668,15 @@ export default function StudentsPage() {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div className="space-y-1.5">
                       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Enrolled Course</label>
-                      <select name="course_name" required defaultValue={editingStudent?.course_name} className="input-field w-full bg-slate-50 text-slate-900 font-medium">
-                        <option value="">Select Course</option>
-                        {courses.map(course => (
-                          <option key={course.id} value={course.course_name}>{course.course_name}</option>
-                        ))}
-                      </select>
+                      <div className="relative">
+                        <Building className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none z-10" />
+                        <select name="course_name" required defaultValue={editingStudent?.course_name} className="input-field w-full pl-10 bg-slate-50 text-slate-900 font-medium">
+                          <option value="">Select Course</option>
+                          {courses.map(course => (
+                            <option key={course.id} value={course.course_name}>{course.course_name}</option>
+                          ))}
+                        </select>
+                      </div>
                     </div>
                     <div className="space-y-1.5">
                       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Batch Schedule</label>
@@ -677,7 +684,10 @@ export default function StudentsPage() {
                     </div>
                     <div className="space-y-1.5">
                       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Join Date</label>
-                      <input name="joining_date" type="date" required defaultValue={editingStudent?.joining_date || ''} className="input-field w-full" />
+                      <div className="relative">
+                        <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none z-10" />
+                        <input name="joining_date" type="date" required defaultValue={editingStudent?.joining_date || ''} className="input-field w-full pl-10" />
+                      </div>
                     </div>
                   </div>
                 </div>

@@ -168,7 +168,7 @@ export default function CoursesPage() {
 
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="relative flex-1 group">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-indigo-600 transition-colors" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-indigo-600 transition-colors pointer-events-none z-10" />
             <input
               type="text"
               placeholder="Search by course descriptor..."
