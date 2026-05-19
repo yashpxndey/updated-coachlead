@@ -19,6 +19,21 @@ export default function MessagesPage() {
   const [isLoadingChats, setIsLoadingChats] = useState(true);
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [tenants, setTenants] = useState<{ id: string; company_name: string }[]>([]);
+  const [selectedTenantId, setSelectedTenantId] = useState<string | 'all'>('all');
+  const [userRole, setUserRole] = useState<string | null>(null);
+
+  useEffect(() => {
+    const role = localStorage.getItem('role');
+    setUserRole(role);
+    if (role === 'super_admin') {
+      const fetchTenantsList = async () => {
+        const { data } = await supabase.from('tenants').select('id, company_name').order('company_name');
+        setTenants(data || []);
+      };
+      fetchTenantsList();
+    }
+  }, []);
 
   useEffect(() => {
     const userData = {
@@ -45,12 +60,25 @@ export default function MessagesPage() {
       const tenantId = localStorage.getItem('tenant_id');
       const role = localStorage.getItem('role');
 
+      if (!role) {
+        setIsLoadingChats(false);
+        return;
+      }
+
+      if (role === 'super_admin' && selectedTenantId === 'all') {
+        setChats([]);
+        setIsLoadingChats(false);
+        return;
+      }
+
+      const activeTenantId = role === 'super_admin' ? selectedTenantId : tenantId;
+
       let query = supabase
         .from('chats')
         .select('*');
 
-      if (role !== 'super_admin' && tenantId) {
-        query = query.eq('tenant_id', tenantId);
+      if (activeTenantId) {
+        query = query.eq('tenant_id', activeTenantId);
       }
 
       const { data, error } = await query.order('created_at', { ascending: false });
@@ -63,9 +91,9 @@ export default function MessagesPage() {
       } else {
         // Seed initial chats if empty
         const initialChats = [
-          { name: 'John Doe (Admin)', last_msg: 'The staff meeting has been rescheduled...', last_msg_time: '10:30 AM', unread_count: 2, is_online: true, tenant_id: tenantId },
-          { name: 'Jane Smith (Staff)', last_msg: 'I have marked the attendance for Class B', last_msg_time: '9:15 AM', unread_count: 0, is_online: false, tenant_id: tenantId },
-          { name: 'Robert Fox', last_msg: 'Can you check the fee status for Sarah?', last_msg_time: 'Yesterday', unread_count: 0, is_online: true, tenant_id: tenantId },
+          { name: 'John Doe (Admin)', last_msg: 'The staff meeting has been rescheduled...', last_msg_time: '10:30 AM', unread_count: 2, is_online: true, tenant_id: activeTenantId },
+          { name: 'Jane Smith (Staff)', last_msg: 'I have marked the attendance for Class B', last_msg_time: '9:15 AM', unread_count: 0, is_online: false, tenant_id: activeTenantId },
+          { name: 'Robert Fox', last_msg: 'Can you check the fee status for Sarah?', last_msg_time: 'Yesterday', unread_count: 0, is_online: true, tenant_id: activeTenantId },
         ];
         const { data: seeded } = await supabase.from('chats').insert(initialChats).select();
         if (seeded) {
@@ -78,21 +106,22 @@ export default function MessagesPage() {
     } finally {
       setIsLoadingChats(false);
     }
-  }, [activeChat]);
+  }, [activeChat, selectedTenantId]);
 
   const fetchMessages = useCallback(async (chatId: string) => {
     setIsLoadingMessages(true);
     try {
       const tenantId = localStorage.getItem('tenant_id');
       const role = localStorage.getItem('role');
+      const activeTenantId = role === 'super_admin' ? selectedTenantId : tenantId;
 
       let query = supabase
         .from('messages')
         .select('*')
         .eq('chat_id', chatId);
 
-      if (role !== 'super_admin' && tenantId) {
-        query = query.eq('tenant_id', tenantId);
+      if (activeTenantId) {
+        query = query.eq('tenant_id', activeTenantId);
       }
 
       const { data, error } = await query.order('created_at', { ascending: true });
@@ -119,7 +148,7 @@ export default function MessagesPage() {
     return () => {
       supabase.removeChannel(chatsSub);
     };
-  }, [fetchChats]);
+  }, [fetchChats, selectedTenantId]);
 
   useEffect(() => {
     if (activeChat) {
@@ -149,13 +178,14 @@ export default function MessagesPage() {
 
     const tenantId = localStorage.getItem('tenant_id');
     const role = localStorage.getItem('role');
+    const activeTenantId = role === 'super_admin' ? selectedTenantId : tenantId;
 
     const newMessage = {
       chat_id: activeChat.id,
       sender_name: user.name || 'Me',
       text: messageText,
       is_me: true,
-      tenant_id: tenantId
+      tenant_id: activeTenantId
     };
 
     setMessageText('');
@@ -191,6 +221,20 @@ export default function MessagesPage() {
         <div className="w-80 glass-card flex flex-col overflow-hidden">
           <div className="p-4 border-b border-white/10">
             <h3 className="font-display font-bold text-xl mb-4">Messages</h3>
+            {userRole === 'super_admin' && (
+              <div className="mb-4">
+                <select 
+                  className="input-field w-full text-xs py-2 h-9"
+                  value={selectedTenantId}
+                  onChange={(e) => setSelectedTenantId(e.target.value)}
+                >
+                  <option value="all">Select Tenant Context...</option>
+                  {tenants.map(t => (
+                    <option key={t.id} value={t.id}>{t.company_name}</option>
+                  ))}
+                </select>
+              </div>
+            )}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" />
               <input type="text" placeholder="Search chats..." className="input-field w-full pl-10 py-2 text-sm" />

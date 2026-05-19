@@ -120,6 +120,21 @@ export default function ReportsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [tenants, setTenants] = useState<{ id: string; company_name: string }[]>([]);
+  const [selectedTenantId, setSelectedTenantId] = useState<string | 'all'>('all');
+  const [userRole, setUserRole] = useState<string | null>(null);
+
+  useEffect(() => {
+    const role = localStorage.getItem('role');
+    setUserRole(role);
+    if (role === 'super_admin') {
+      const fetchTenantsList = async () => {
+        const { data } = await supabase.from('tenants').select('id, company_name').order('company_name');
+        setTenants(data || []);
+      };
+      fetchTenantsList();
+    }
+  }, []);
 
   const [reportData, setReportData] = useState<any>(null);
   const [editedData, setEditedData] = useState<any>(null);
@@ -152,26 +167,39 @@ export default function ReportsPage() {
     const tenantId = localStorage.getItem('tenant_id');
     const role = localStorage.getItem('role');
     
+    if (!role) return;
+
+    if (role === 'super_admin' && selectedTenantId === 'all') {
+      setStudents([]);
+      setCourses([]);
+      return;
+    }
+
+    const activeTenantId = role === 'super_admin' ? selectedTenantId : tenantId;
+
     let query = supabase.from('students').select('*').eq('status', 'active');
     
-    if (role !== 'super_admin' && tenantId) {
-      query = query.eq('tenant_id', tenantId);
+    if (activeTenantId) {
+      query = query.eq('tenant_id', activeTenantId);
     }
 
     const { data } = await query;
     if (data && data.length > 0) {
       setStudents(data);
       if (!selectedStudentId) setSelectedStudentId(data[0].id);
+    } else {
+      setStudents([]);
+      setSelectedStudentId('');
     }
 
     // Fetch courses
     let courseQuery = supabase.from('courses').select('*').eq('status', 'active');
-    if (role !== 'super_admin' && tenantId) {
-      courseQuery = courseQuery.eq('tenant_id', tenantId);
+    if (activeTenantId) {
+      courseQuery = courseQuery.eq('tenant_id', activeTenantId);
     }
     const { data: coursesData } = await courseQuery;
     setCourses(coursesData || []);
-  }, [selectedStudentId]);
+  }, [selectedStudentId, selectedTenantId]);
 
   const filteredStudents = useMemo(() => {
     if (courseFilter === 'ALL') return students;
@@ -561,7 +589,7 @@ export default function ReportsPage() {
     return () => {
       supabase.removeChannel(sub);
     };
-  }, [fetchStudents]);
+  }, [fetchStudents, selectedTenantId]);
 
   useEffect(() => {
     fetchReportData();
@@ -1029,7 +1057,7 @@ export default function ReportsPage() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-8 pb-12">
+      <div className="space-y-8 pb-24 md:pb-0">
         {/* Header & Filters */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="flex items-center gap-4">
@@ -1042,7 +1070,23 @@ export default function ReportsPage() {
             </div>
           </div>
           
-          <div className="flex flex-col sm:flex-row items-center gap-3">
+          <div className="flex flex-col md:flex-row items-center gap-3">
+            {userRole === 'super_admin' && (
+              <div className="relative w-full md:w-64">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                <select 
+                  className="input-field pl-10 w-full appearance-none pr-10"
+                  value={selectedTenantId}
+                  onChange={(e) => setSelectedTenantId(e.target.value)}
+                >
+                  <option value="all">Select Tenant Context...</option>
+                  {tenants.map(t => (
+                    <option key={t.id} value={t.id}>{t.company_name}</option>
+                  ))}
+                </select>
+                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+              </div>
+            )}
             {isLoading ? (
               <div className="flex items-center gap-3 px-4 py-2 bg-slate-100 rounded-xl border border-slate-200">
                 <Loader2 className="w-4 h-4 text-indigo-600 animate-spin" />
@@ -1056,16 +1100,16 @@ export default function ReportsPage() {
                     setIsModalOpen(true);
                   }}
                   disabled={!reportData}
-                  className="btn-secondary w-full sm:w-auto shadow-sm px-5 py-2.5 flex items-center justify-center gap-2 border-slate-200 text-slate-700 bg-white hover:bg-slate-50 disabled:opacity-50"
+                  className="btn-secondary w-full md:w-auto shadow-sm px-5 py-2.5 flex items-center justify-center gap-2 border-slate-200 text-slate-700 bg-white hover:bg-slate-50 disabled:opacity-50"
                 >
                   <Edit3 className="w-4 h-4 text-indigo-600" />
                   <span className="font-bold">Edit Record</span>
                 </button>
-                <div className="hidden sm:block h-8 w-px bg-slate-200 mx-1" />
+                <div className="hidden md:block h-8 w-px bg-slate-200 mx-1" />
                 <button 
                   onClick={downloadPDF}
                   disabled={!reportData || isDownloading}
-                  className="btn-primary w-full sm:w-auto shadow-lg shadow-indigo-100 px-6 py-2.5 flex items-center gap-2 disabled:opacity-50 min-w-[100px] justify-center"
+                  className="btn-primary w-full md:w-auto shadow-lg shadow-indigo-100 px-6 py-2.5 flex items-center gap-2 disabled:opacity-50 min-w-[100px] justify-center"
                 >
                   {isDownloading ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
@@ -1077,11 +1121,11 @@ export default function ReportsPage() {
                 <button 
                   onClick={downloadXLSX}
                   disabled={!reportData}
-                  className="w-full sm:w-auto p-2.5 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-all text-slate-600 hover:text-emerald-600 shadow-sm disabled:opacity-50 flex items-center justify-center"
+                  className="w-full md:w-auto p-2.5 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-all text-slate-600 hover:text-emerald-600 shadow-sm disabled:opacity-50 flex items-center justify-center"
                   title="Export Spreadsheet"
                 >
                   <FileSpreadsheet className="w-5 h-5" />
-                  <span className="sm:hidden font-bold ml-2">Export XLSX</span>
+                  <span className="md:hidden font-bold ml-2">Export XLSX</span>
                 </button>
               </>
             )}

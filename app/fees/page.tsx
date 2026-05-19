@@ -42,12 +42,33 @@ export default function FeesPage() {
   const [courses, setCourses] = useState<{ id: string; course_name: string; fees?: number }[]>([]);
   const [isSaving, setIsSaving] = useState(false);
   const [selectedFeeForPayment, setSelectedFeeForPayment] = useState<FeeRecord | null>(null);
+  const [tenants, setTenants] = useState<{ id: string; company_name: string }[]>([]);
+  const [selectedTenantId, setSelectedTenantId] = useState<string | 'all'>('all');
+  const [userRole, setUserRole] = useState<string | null>(null);
+
+  useEffect(() => {
+    const role = localStorage.getItem('role');
+    setUserRole(role);
+    if (role === 'super_admin') {
+      const fetchTenantsList = async () => {
+        const { data } = await supabase.from('tenants').select('id, company_name').order('company_name');
+        setTenants(data || []);
+      };
+      fetchTenantsList();
+    }
+  }, []);
 
   const fetchFees = async () => {
     try {
+      setIsLoading(true);
       const tenantId = localStorage.getItem('tenant_id');
       const role = localStorage.getItem('role');
       
+      if (!role) {
+        setIsLoading(false);
+        return;
+      }
+
       let query = supabase.from('fees').select(`
           *,
           students (
@@ -57,15 +78,29 @@ export default function FeesPage() {
           )
         `);
       
-      if (role !== 'super_admin' && tenantId) {
+      if (role === 'super_admin') {
+        if (selectedTenantId !== 'all') {
+          query = query.eq('tenant_id', selectedTenantId);
+        } else {
+          setFees([]);
+          setStudents([]);
+          setCourses([]);
+          setIsLoading(false);
+          return;
+        }
+      } else if (tenantId) {
         query = query.eq('tenant_id', tenantId);
+      } else {
+        setFees([]);
+        setIsLoading(false);
+        return;
       }
       
       const { data, error } = await query.order('next_due_date', { ascending: true });
       
       if (error) {
-        console.error('Fees fetch error:', error.message, error.details, error.hint, error.code);
-        alert(`Failed to fetch fees: ${error.message}`);
+        console.error('Fees fetch error:', error.message);
+        setFees([]);
         return;
       }
 
@@ -77,13 +112,21 @@ export default function FeesPage() {
     }
   };
 
-  const fetchStudents = async () => {
+  const fetchStudentsAndCourses = async () => {
     const tenantId = localStorage.getItem('tenant_id');
     const role = localStorage.getItem('role');
     
+    if (!role) return;
+
     let query = supabase.from('students').select('id, full_name').eq('status', 'active');
     
-    if (role !== 'super_admin' && tenantId) {
+    if (role === 'super_admin') {
+      if (selectedTenantId !== 'all') {
+        query = query.eq('tenant_id', selectedTenantId);
+      } else {
+        return;
+      }
+    } else if (tenantId) {
       query = query.eq('tenant_id', tenantId);
     }
     
@@ -92,7 +135,9 @@ export default function FeesPage() {
 
     // Fetch courses
     let courseQuery = supabase.from('courses').select('id, course_name, fees').eq('status', 'active');
-    if (role !== 'super_admin' && tenantId) {
+    if (role === 'super_admin') {
+      courseQuery = courseQuery.eq('tenant_id', selectedTenantId);
+    } else if (tenantId) {
       courseQuery = courseQuery.eq('tenant_id', tenantId);
     }
     const { data: courseData } = await courseQuery;
@@ -101,7 +146,7 @@ export default function FeesPage() {
 
   useEffect(() => {
     fetchFees();
-    fetchStudents();
+    fetchStudentsAndCourses();
 
     const sub = supabase
       .channel('fees-all')
@@ -362,8 +407,8 @@ export default function FeesPage() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-8">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div className="space-y-8 pb-24 md:pb-0">
+        <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-6">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-100/50">
               <IndianRupee className="w-6 h-6 text-white" />
@@ -373,7 +418,23 @@ export default function FeesPage() {
               <p className="text-sm text-slate-500 font-medium">Manage student accounts and collection metrics</p>
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col md:flex-row items-center gap-3">
+            {userRole === 'super_admin' && (
+              <div className="relative w-full md:w-64">
+                <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                <select 
+                  className="input-field pl-10 w-full appearance-none pr-10"
+                  value={selectedTenantId}
+                  onChange={(e) => setSelectedTenantId(e.target.value)}
+                >
+                  <option value="all">Select Tenant Context...</option>
+                  {tenants.map(t => (
+                    <option key={t.id} value={t.id}>{t.company_name}</option>
+                  ))}
+                </select>
+                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+              </div>
+            )}
             <button onClick={exportReport} className="btn-secondary shadow-sm font-bold flex items-center gap-2">
               <FileText className="w-4 h-4" />
               Download Report
@@ -642,7 +703,7 @@ export default function FeesPage() {
                   </select>
                 </div>
                 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Total Liability (₹)</label>
                     <input 
@@ -667,7 +728,7 @@ export default function FeesPage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Transaction Value (₹)</label>
                     <input name="amount" type="number" required className="input-field w-full bg-white border-slate-200 font-bold text-emerald-600 focus:ring-emerald-500 text-base md:text-sm" placeholder="0.00" defaultValue={0} />
@@ -692,9 +753,9 @@ export default function FeesPage() {
                   <textarea name="notes" className="input-field w-full h-24 resize-none bg-white border-slate-200 text-base md:text-sm" placeholder="Add relevant transaction identifiers or notes..."></textarea>
                 </div>
 
-                <div className="flex flex-col sm:flex-row justify-end gap-3 mt-6">
-                  <button type="button" onClick={() => setIsRecordModalOpen(false)} className="btn-secondary w-full sm:w-auto px-6 font-bold shadow-sm order-2 sm:order-1">Cancel</button>
-                  <button type="submit" disabled={isSaving} className="btn-primary w-full sm:w-auto px-10 font-bold shadow-lg shadow-indigo-100 order-1 sm:order-2">
+                <div className="flex flex-col md:flex-row justify-end gap-3 mt-6">
+                  <button type="button" onClick={() => setIsRecordModalOpen(false)} className="btn-secondary w-full md:w-auto px-6 font-bold shadow-sm order-2 md:order-1">Cancel</button>
+                  <button type="submit" disabled={isSaving} className="btn-primary w-full md:w-auto px-10 font-bold shadow-lg shadow-indigo-100 order-1 md:order-2">
                     {isSaving ? 'Processing Ledger...' : 'Post Payment'}
                   </button>
                 </div>

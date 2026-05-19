@@ -223,7 +223,7 @@ export default function DashboardPage() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-8">
+      <div className="space-y-8 pb-24 md:pb-0">
         {/* Header with Announcements Button */}
         <div className="flex items-center justify-between">
           <div>
@@ -242,7 +242,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4">
           <button 
             type="button" 
             onClick={() => handleQuickAction('/students')}

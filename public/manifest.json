@@ -1,18 +1,36 @@
 {
-  "name": "CoachLead — Academy Management",
+  "name": "CoachLead",
   "short_name": "CoachLead",
-  "description": "Academy Management System by Revjet",
-  "start_url": "/login",
+  "description": "Academy Management System & Lead Management for Coaches",
+  "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#0f172a",
-  "theme_color": "#0D9488",
+  "theme_color": "#0f172a",
   "icons": [
     {
-      "src": "/favicon.svg",
+      "src": "/icon-192x192.png",
       "sizes": "192x192",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
     }
   ]
 }

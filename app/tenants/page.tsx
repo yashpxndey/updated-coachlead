@@ -372,19 +372,19 @@ export default function TenantsPage() {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-display font-bold text-white">Super Admin Panel</h2>
-            <p className="text-text-muted">Manage platform tenants and financial records</p>
+            <h2 className="text-2xl font-display font-bold text-slate-900">Super Admin Panel</h2>
+            <p className="text-slate-500">Manage platform tenants and financial records</p>
           </div>
           <div className="flex items-center gap-3">
             <button 
               onClick={() => setActiveTab('MANAGEMENT')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === 'MANAGEMENT' ? 'bg-accent text-white' : 'bg-white/5 text-text-muted hover:bg-white/10'}`}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === 'MANAGEMENT' ? 'bg-indigo-600 text-white shadow-md' : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200'}`}
             >
               Tenants
             </button>
             <button 
               onClick={() => setActiveTab('PAYMENTS')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === 'PAYMENTS' ? 'bg-accent text-white' : 'bg-white/5 text-text-muted hover:bg-white/10'}`}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === 'PAYMENTS' ? 'bg-indigo-600 text-white shadow-md' : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200'}`}
             >
               Payments
             </button>
@@ -408,9 +408,9 @@ export default function TenantsPage() {
 
         {/* Search & Filters */}
         <div className="space-y-4">
-          <div className="glass-card p-4 flex flex-col md:flex-row gap-4">
+          <div className="card-geometric p-4 flex flex-col md:flex-row gap-4">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-white/20" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
               <input 
                 type="text" 
                 placeholder="Search by company name or subdomain..." 
@@ -421,7 +421,7 @@ export default function TenantsPage() {
             </div>
             <button 
               onClick={() => setShowFilters(!showFilters)}
-              className={`btn-secondary ${showFilters ? 'bg-white/10 border-accent' : ''}`}
+              className={`btn-secondary ${showFilters ? 'bg-slate-50 border-indigo-600' : ''}`}
             >
               <Filter className="w-4 h-4" />
               Filters
@@ -439,9 +439,9 @@ export default function TenantsPage() {
               >
                 <div className="glass-card p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label className="text-xs font-medium text-text-muted uppercase tracking-wider">Plan</label>
+                    <label className="text-xs font-medium text-slate-500 uppercase tracking-wider">Plan</label>
                     <select 
-                      className="input-field w-full bg-secondary text-white"
+                      className="input-field w-full"
                       value={planFilter}
                       onChange={(e) => setPlanFilter(e.target.value)}
                     >
@@ -452,9 +452,9 @@ export default function TenantsPage() {
                     </select>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-xs font-medium text-text-muted uppercase tracking-wider">Status</label>
+                    <label className="text-xs font-medium text-slate-500 uppercase tracking-wider">Status</label>
                     <select 
-                      className="input-field w-full bg-secondary text-white"
+                      className="input-field w-full"
                       value={statusFilter}
                       onChange={(e) => setStatusFilter(e.target.value)}
                     >
@@ -470,52 +470,52 @@ export default function TenantsPage() {
         </div>
 
         {/* Tables */}
-        <div className="glass-card overflow-hidden">
+        <div className="card-geometric overflow-hidden">
           <div className="overflow-x-auto">
             {activeTab === 'MANAGEMENT' ? (
               <table className="w-full text-left border-collapse min-w-[1000px]">
                 <thead>
-                  <tr className="bg-white/5 border-b border-white/10">
-                    <th className="p-4 font-semibold text-sm">Company</th>
-                    <th className="p-4 font-semibold text-sm">Subdomain</th>
-                    <th className="p-4 font-semibold text-sm">Plan</th>
-                    <th className="p-4 font-semibold text-sm">Students</th>
-                    <th className="p-4 font-semibold text-sm">Revenue</th>
-                    <th className="p-4 font-semibold text-sm">Status</th>
-                    <th className="p-4 font-semibold text-sm text-right">Actions</th>
+                  <tr className="bg-slate-50 border-b border-slate-200">
+                    <th className="p-4 font-semibold text-sm text-slate-600">Company</th>
+                    <th className="p-4 font-semibold text-sm text-slate-600">Subdomain</th>
+                    <th className="p-4 font-semibold text-sm text-slate-600">Plan</th>
+                    <th className="p-4 font-semibold text-sm text-slate-600">Students</th>
+                    <th className="p-4 font-semibold text-sm text-slate-600">Revenue</th>
+                    <th className="p-4 font-semibold text-sm text-slate-600">Status</th>
+                    <th className="p-4 font-semibold text-sm text-slate-600 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/5">
+                <tbody className="divide-y divide-slate-100">
                   {isLoading ? (
                     <tr>
-                      <td colSpan={7} className="p-12 text-center text-text-muted">Loading tenants...</td>
+                      <td colSpan={7} className="p-12 text-center text-slate-400">Loading tenants...</td>
                     </tr>
                   ) : filteredTenants.map((tenant) => (
-                    <tr key={tenant.id} className="hover:bg-white/5 transition-colors group">
+                    <tr key={tenant.id} className="hover:bg-slate-50/50 transition-colors group">
                       <td className="p-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-lg bg-accent/20 flex items-center justify-center font-bold text-accent">
+                          <div className="w-10 h-10 rounded-lg bg-indigo-50 flex items-center justify-center font-bold text-indigo-600">
                             {tenant.company_name[0]}
                           </div>
-                          <p className="font-medium text-white">{tenant.company_name}</p>
+                          <p className="font-semibold text-slate-900">{tenant.company_name}</p>
                         </div>
                       </td>
                       <td className="p-4">
                         <a 
-                          href={`https://${tenant.subdomain}.coachlead.app`} 
+                           href={`https://${tenant.subdomain}.academy`} 
                           target="_blank" 
                           rel="noopener noreferrer"
-                          className="flex items-center gap-2 text-sm text-accent hover:underline"
+                          className="flex items-center gap-2 text-sm text-indigo-600 hover:underline"
                         >
-                          {tenant.subdomain}.coachlead.app
+                          {tenant.subdomain}.academy
                           <ExternalLink className="w-3 h-3" />
                         </a>
                       </td>
                       <td className="p-4">
                         <PlanBadge plan={tenant.plan} />
                       </td>
-                      <td className="p-4 text-sm text-text-muted">{tenant.number_of_students}</td>
-                      <td className="p-4 text-sm font-bold text-white">₹{tenant.revenue.toLocaleString()}</td>
+                      <td className="p-4 text-sm text-slate-500 font-medium">{tenant.number_of_students}</td>
+                      <td className="p-4 text-sm font-bold text-slate-900">₹{tenant.revenue.toLocaleString()}</td>
                       <td className="p-4">
                         <button 
                           onClick={() => handleToggleStatus(tenant.id, tenant.status)}
@@ -527,9 +527,9 @@ export default function TenantsPage() {
                       <td className="p-4 text-right relative">
                         <button 
                           onClick={() => setActiveActionMenu(activeActionMenu === tenant.id ? null : tenant.id)}
-                          className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+                          className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
                         >
-                          <MoreVertical className="w-5 h-5 text-text-muted" />
+                          <MoreVertical className="w-5 h-5 text-slate-400" />
                         </button>
                         
                         <AnimatePresence>
@@ -540,7 +540,7 @@ export default function TenantsPage() {
                                 initial={{ opacity: 0, scale: 0.95, y: -10 }}
                                 animate={{ opacity: 1, scale: 1, y: 0 }}
                                 exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                                className="absolute right-4 top-12 w-32 bg-secondary border border-white/10 rounded-xl shadow-2xl z-20 py-2"
+                                className="absolute right-4 top-12 w-32 bg-white border border-slate-200 rounded-xl shadow-2xl z-20 py-2"
                               >
                                 <button 
                                   onClick={() => {
@@ -548,9 +548,9 @@ export default function TenantsPage() {
                                     setIsModalOpen(true);
                                     setActiveActionMenu(null);
                                   }}
-                                  className="w-full px-4 py-2 text-left text-sm hover:bg-white/5 flex items-center gap-2 text-white"
+                                  className="w-full px-4 py-2 text-left text-sm hover:bg-slate-50 flex items-center gap-2 text-slate-700"
                                 >
-                                  <Edit2 className="w-4 h-4 text-blue-400" />
+                                  <Edit2 className="w-4 h-4 text-indigo-600" />
                                   Edit
                                 </button>
                                 <button 
@@ -560,14 +560,14 @@ export default function TenantsPage() {
                                     setIsAccountsModalOpen(true);
                                     setActiveActionMenu(null);
                                   }}
-                                  className="w-full px-4 py-2 text-left text-sm hover:bg-white/5 flex items-center gap-2 text-white"
+                                  className="w-full px-4 py-2 text-left text-sm hover:bg-slate-50 flex items-center gap-2 text-slate-700"
                                 >
-                                  <Users className="w-4 h-4 text-emerald-400" />
+                                  <Users className="w-4 h-4 text-emerald-600" />
                                   Accounts
                                 </button>
                                 <button 
                                   onClick={() => handleDeleteTenant(tenant.id)}
-                                  className="w-full px-4 py-2 text-left text-sm hover:bg-white/5 flex items-center gap-2 text-red-400"
+                                  className="w-full px-4 py-2 text-left text-sm hover:bg-slate-50 flex items-center gap-2 text-rose-600"
                                 >
                                   <Trash2 className="w-4 h-4" />
                                   Delete
@@ -584,30 +584,30 @@ export default function TenantsPage() {
             ) : (
               <table className="w-full text-left border-collapse min-w-[1100px]">
                 <thead>
-                  <tr className="bg-white/5 border-b border-white/10">
-                    <th className="p-4 font-semibold text-sm">Company</th>
-                    <th className="p-4 font-semibold text-sm">Plan</th>
-                    <th className="p-4 font-semibold text-sm">Status</th>
-                    <th className="p-4 font-semibold text-sm">Paid</th>
-                    <th className="p-4 font-semibold text-sm">Pending</th>
-                    <th className="p-4 font-semibold text-sm">Inst. (P/T)</th>
-                    <th className="p-4 font-semibold text-sm">Mode</th>
-                    <th className="p-4 font-semibold text-sm">Date</th>
-                    <th className="p-4 font-semibold text-sm">Due</th>
-                    <th className="p-4 font-semibold text-sm text-right">Invoice</th>
+                  <tr className="bg-slate-50 border-b border-slate-200">
+                    <th className="p-4 font-semibold text-sm text-slate-600">Company</th>
+                    <th className="p-4 font-semibold text-sm text-slate-600">Plan</th>
+                    <th className="p-4 font-semibold text-sm text-slate-600">Status</th>
+                    <th className="p-4 font-semibold text-sm text-slate-600">Paid</th>
+                    <th className="p-4 font-semibold text-sm text-slate-600">Pending</th>
+                    <th className="p-4 font-semibold text-sm text-slate-600">Inst. (P/T)</th>
+                    <th className="p-4 font-semibold text-sm text-slate-600">Mode</th>
+                    <th className="p-4 font-semibold text-sm text-slate-600">Date</th>
+                    <th className="p-4 font-semibold text-sm text-slate-600">Due</th>
+                    <th className="p-4 font-semibold text-sm text-slate-600 text-right">Invoice</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/5">
+                <tbody className="divide-y divide-slate-100">
                   {isLoading ? (
                     <tr>
-                      <td colSpan={10} className="p-12 text-center text-text-muted">Loading payments...</td>
+                      <td colSpan={10} className="p-12 text-center text-slate-400">Loading payments...</td>
                     </tr>
                   ) : filteredTenants.map((tenant) => (
                     <React.Fragment key={tenant.id}>
-                      <tr className="hover:bg-white/5 transition-colors group">
+                      <tr className="hover:bg-slate-50 transition-colors group">
                       <td className="p-4">
-                        <p className="font-medium text-white">{tenant.company_name}</p>
-                        <p className="text-xs text-text-muted">{tenant.number_of_students} Students</p>
+                        <p className="font-semibold text-slate-900">{tenant.company_name}</p>
+                        <p className="text-xs text-slate-500">{tenant.number_of_students} Students</p>
                       </td>
                       <td className="p-4">
                         <PlanBadge plan={tenant.plan} />
@@ -615,22 +615,22 @@ export default function TenantsPage() {
                       <td className="p-4">
                         <StatusBadge status={tenant.status} />
                       </td>
-                      <td className="p-4 text-sm font-bold text-emerald-400">₹{tenant.amount_paid.toLocaleString()}</td>
-                      <td className="p-4 text-sm font-bold text-red-400">₹{tenant.amount_pending.toLocaleString()}</td>
-                      <td className="p-4 text-sm text-text-muted">
+                      <td className="p-4 text-sm font-bold text-emerald-600">₹{tenant.amount_paid.toLocaleString()}</td>
+                      <td className="p-4 text-sm font-bold text-rose-600">₹{tenant.amount_pending.toLocaleString()}</td>
+                      <td className="p-4 text-sm text-slate-500">
                         {tenant.installments_paid} / {tenant.installments_total}
                       </td>
-                      <td className="p-4 text-sm text-text-muted">{tenant.payment_mode}</td>
-                      <td className="p-4 text-sm text-text-muted">{tenant.payment_date}</td>
+                      <td className="p-4 text-sm text-slate-500">{tenant.payment_mode}</td>
+                      <td className="p-4 text-sm text-slate-500">{tenant.payment_date}</td>
                       <td className="p-4">
-                        <span className={`text-xs font-bold ${tenant.days_past_due > 0 ? 'text-red-500' : 'text-emerald-500'}`}>
+                        <span className={`text-xs font-bold ${tenant.days_past_due > 0 ? 'text-rose-600' : 'text-emerald-600'}`}>
                           {tenant.days_past_due} Days
                         </span>
                       </td>
                       <td className="p-4 text-right flex items-center justify-end gap-2">
                         <button 
                           onClick={() => toggleHistory(tenant.id)}
-                          className={`p-2 rounded-lg transition-colors ${expandedHistoryTenantId === tenant.id ? 'bg-accent/20 text-accent' : 'hover:bg-white/10 text-text-muted'}`}
+                          className={`p-2 rounded-lg transition-colors ${expandedHistoryTenantId === tenant.id ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-slate-100 text-slate-400'}`}
                           title="Payment History"
                         >
                           <History className="w-5 h-5" />
@@ -640,14 +640,14 @@ export default function TenantsPage() {
                             setSelectedTenantForInstallment(tenant);
                             setIsInstallmentModalOpen(true);
                           }}
-                          className="p-2 hover:bg-white/10 rounded-lg transition-colors text-emerald-400"
+                          className="p-2 hover:bg-slate-100 rounded-lg transition-colors text-emerald-600"
                           title="Add Installment"
                         >
                           <Plus className="w-5 h-5" />
                         </button>
                         <button 
                           onClick={() => downloadInvoice(tenant)}
-                          className="p-2 hover:bg-white/10 rounded-lg transition-colors text-accent"
+                          className="p-2 hover:bg-slate-100 rounded-lg transition-colors text-indigo-600"
                           title="Download Invoice"
                         >
                           <Download className="w-5 h-5" />
@@ -667,32 +667,32 @@ export default function TenantsPage() {
                             >
                               <div className="p-6">
                                 <div className="flex items-center justify-between mb-4">
-                                  <h4 className="text-sm font-bold uppercase tracking-wider text-accent flex items-center gap-2">
+                                  <h4 className="text-sm font-bold uppercase tracking-wider text-indigo-600 flex items-center gap-2">
                                     <History className="w-4 h-4" /> Payment History - {tenant.company_name}
                                   </h4>
                                 </div>
                                 {isHistoryLoading ? (
                                   <div className="flex items-center justify-center py-8">
-                                    <Loader2 className="w-6 h-6 animate-spin text-accent" />
+                                    <Loader2 className="w-6 h-6 animate-spin text-indigo-600" />
                                   </div>
                                 ) : paymentHistory.length === 0 ? (
-                                  <p className="text-center py-8 text-text-muted text-sm italic">No payment history found for this tenant.</p>
+                                  <p className="text-center py-8 text-slate-500 text-sm italic">No payment history found for this tenant.</p>
                                 ) : (
                                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                     {paymentHistory.map((payment) => (
-                                      <div key={payment.id} className="glass-card p-4 border border-white/5 hover:border-white/10 transition-colors">
+                                      <div key={payment.id} className="card-geometric p-4 hover:border-indigo-200 transition-colors">
                                         <div className="flex items-center justify-between mb-2">
-                                          <span className="text-lg font-bold text-emerald-400">₹{payment.amount.toLocaleString()}</span>
-                                          <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-white/10 text-white uppercase tracking-wider">
+                                          <span className="text-lg font-bold text-emerald-600">₹{payment.amount.toLocaleString()}</span>
+                                          <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-slate-100 text-slate-600 uppercase tracking-wider">
                                             {payment.payment_mode}
                                           </span>
                                         </div>
-                                        <div className="flex items-center gap-2 text-xs text-text-muted mb-2">
+                                        <div className="flex items-center gap-2 text-xs text-slate-500 mb-2">
                                           <Calendar className="w-3 h-3" />
                                           {payment.payment_date}
                                         </div>
                                         {payment.notes && (
-                                          <div className="text-xs text-text-muted italic bg-black/20 p-2 rounded">
+                                          <div className="text-xs text-slate-600 italic bg-slate-50 p-2 rounded">
                                             &quot;{payment.notes}&quot;
                                           </div>
                                         )}
@@ -718,73 +718,73 @@ export default function TenantsPage() {
       {/* Onboard/Edit Tenant Modal */}
       <AnimatePresence>
         {isModalOpen && (
-          <div className="fixed inset-0 z-50 flex flex-col md:items-center md:justify-center bg-black/80 backdrop-blur-sm overflow-y-auto">
+          <div className="fixed inset-0 z-50 flex flex-col md:items-center md:justify-center bg-slate-900/40 backdrop-blur-sm overflow-y-auto">
             <motion.div 
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="glass-card w-full max-w-2xl relative min-h-screen md:min-h-0 md:my-8 p-6 md:p-8"
+              className="card-geometric w-full max-w-2xl relative min-h-screen md:min-h-0 md:my-8 p-6 md:p-8"
             >
               <button 
                 onClick={() => setIsModalOpen(false)}
-                className="absolute top-4 right-4 p-2 hover:bg-white/5 rounded-lg transition-colors"
+                className="absolute top-4 right-4 p-2 hover:bg-slate-50 rounded-lg transition-colors text-slate-400"
               >
                 <X className="w-5 h-5" />
               </button>
 
-              <h3 className="text-2xl font-display font-bold mb-6 text-white">
+              <h3 className="text-2xl font-display font-bold mb-6 text-slate-900">
                 {editingTenant ? 'Edit Tenant Details' : 'Onboard New Tenant'}
               </h3>
               
               <form onSubmit={handleSaveTenant} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-text-muted">Company Name</label>
+                    <label className="text-sm font-medium text-slate-500">Company Name</label>
                     <input name="name" type="text" required defaultValue={editingTenant?.company_name} className="input-field w-full" placeholder="e.g. Revjet Academy" />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-text-muted">Subdomain</label>
+                    <label className="text-sm font-medium text-slate-500">Subdomain</label>
                     <div className="flex items-center gap-2">
                       <input name="subdomain" type="text" required defaultValue={editingTenant?.subdomain} className="input-field flex-1" placeholder="e.g. revjet" />
-                      <span className="text-xs text-text-muted">.coachlead.app</span>
+                      <span className="text-xs text-slate-500">.coachlead.app</span>
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-text-muted">Number of Students</label>
+                    <label className="text-sm font-medium text-slate-500">Number of Students</label>
                     <input name="students" type="number" required defaultValue={editingTenant?.number_of_students} className="input-field w-full" placeholder="e.g. 50" />
-                    <p className="text-[10px] text-accent">Plan will be auto-assigned based on count</p>
+                    <p className="text-[10px] text-indigo-600 font-bold">Plan will be auto-assigned based on count</p>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-text-muted">Revenue (₹)</label>
+                    <label className="text-sm font-medium text-slate-500">Revenue (₹)</label>
                     <input name="revenue" type="number" required defaultValue={editingTenant?.revenue} className="input-field w-full" placeholder="e.g. 50000" />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-text-muted">Status</label>
-                    <select name="status" required defaultValue={editingTenant?.status || 'active'} className="input-field w-full bg-secondary text-white">
+                    <label className="text-sm font-medium text-slate-500">Status</label>
+                    <select name="status" required defaultValue={editingTenant?.status || 'active'} className="input-field w-full">
                       <option value="active">Active</option>
                       <option value="suspended">Suspended</option>
                     </select>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-text-muted">Initial Amount Paid (₹)</label>
+                    <label className="text-sm font-medium text-slate-500">Initial Amount Paid (₹)</label>
                     <input name="initialAmountPaid" type="number" required defaultValue={editingTenant?.amount_paid} className="input-field w-full" placeholder="e.g. 10000" />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-text-muted">Amount Pending (₹)</label>
+                    <label className="text-sm font-medium text-slate-500">Amount Pending (₹)</label>
                     <input name="amountPending" type="number" required defaultValue={editingTenant?.amount_pending} className="input-field w-full" placeholder="e.g. 5000" />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-text-muted">Number of Installments</label>
+                    <label className="text-sm font-medium text-slate-500">Number of Installments</label>
                     <input name="installments" type="number" required defaultValue={editingTenant?.installments_total} className="input-field w-full" placeholder="e.g. 3" />
                   </div>
                 </div>
 
                 {!editingTenant && (
-                  <div className="space-y-6 pt-6 border-t border-white/10">
-                    <h4 className="text-lg font-bold text-white">Account Credentials</h4>
+                  <div className="space-y-6 pt-6 border-t border-slate-100">
+                    <h4 className="text-lg font-bold text-slate-900">Account Credentials</h4>
                     
                     <div className="space-y-4">
-                      <p className="text-sm font-medium text-accent">--- Admin Account ---</p>
+                      <p className="text-sm font-medium text-indigo-600 uppercase tracking-widest text-[10px]">Admin Account</p>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <input name="adminName" type="text" required className="input-field w-full" placeholder="Admin Full Name" />
                         <input name="adminEmail" type="email" required className="input-field w-full" placeholder="Admin Email" />
@@ -793,7 +793,7 @@ export default function TenantsPage() {
                     </div>
 
                     <div className="space-y-4">
-                      <p className="text-sm font-medium text-accent">--- Staff Account 1 ---</p>
+                      <p className="text-sm font-medium text-indigo-600 uppercase tracking-widest text-[10px]">Staff Account 1</p>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <input name="staff1Name" type="text" className="input-field w-full" placeholder="Staff 1 Full Name" />
                         <input name="staff1Email" type="email" className="input-field w-full" placeholder="Staff 1 Email" />
@@ -802,7 +802,7 @@ export default function TenantsPage() {
                     </div>
 
                     <div className="space-y-4">
-                      <p className="text-sm font-medium text-accent">--- Staff Account 2 ---</p>
+                      <p className="text-sm font-medium text-indigo-600 uppercase tracking-widest text-[10px]">Staff Account 2</p>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <input name="staff2Name" type="text" className="input-field w-full" placeholder="Staff 2 Full Name" />
                         <input name="staff2Email" type="email" className="input-field w-full" placeholder="Staff 2 Email" />
@@ -812,7 +812,7 @@ export default function TenantsPage() {
                   </div>
                 )}
 
-                <div className="flex justify-end gap-3 pt-4 border-t border-white/10">
+                <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
                   <button type="button" onClick={() => setIsModalOpen(false)} className="btn-secondary">Cancel</button>
                   <button type="submit" className="btn-primary">
                     {editingTenant ? 'Update Tenant' : 'Onboard Tenant'}
@@ -827,42 +827,42 @@ export default function TenantsPage() {
       {/* Tenant Accounts Modal */}
       <AnimatePresence>
         {isAccountsModalOpen && selectedTenantForAccounts && (
-          <div className="fixed inset-0 z-50 flex flex-col md:items-center md:justify-center bg-black/80 backdrop-blur-sm overflow-y-auto">
+          <div className="fixed inset-0 z-50 flex flex-col md:items-center md:justify-center bg-slate-900/40 backdrop-blur-sm overflow-y-auto">
             <motion.div 
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="glass-card w-full max-w-4xl relative min-h-screen md:min-h-0 md:my-8 p-6 md:p-8"
+              className="card-geometric w-full max-w-4xl relative min-h-screen md:min-h-0 md:my-8 p-6 md:p-8"
             >
               <button 
                 onClick={() => setIsAccountsModalOpen(false)}
-                className="absolute top-4 right-4 p-2 hover:bg-white/5 rounded-lg transition-colors"
+                className="absolute top-4 right-4 p-2 hover:bg-slate-50 rounded-lg transition-colors text-slate-400"
               >
                 <X className="w-5 h-5" />
               </button>
 
               <div className="mb-6">
-                <h3 className="text-2xl font-display font-bold text-white">
+                <h3 className="text-2xl font-display font-bold text-slate-900">
                   Manage Accounts: {selectedTenantForAccounts.company_name}
                 </h3>
-                <p className="text-text-muted text-sm">View and manage Admin/Staff credentials</p>
+                <p className="text-slate-500 text-sm font-medium">View and manage Admin/Staff credentials</p>
               </div>
 
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-white/5 border-b border-white/10">
-                      <th className="p-4 font-semibold text-sm">Name</th>
-                      <th className="p-4 font-semibold text-sm">Email</th>
-                      <th className="p-4 font-semibold text-sm">Password</th>
-                      <th className="p-4 font-semibold text-sm">Role</th>
-                      <th className="p-4 font-semibold text-sm">Status</th>
-                      <th className="p-4 font-semibold text-sm text-right">Actions</th>
+                    <tr className="bg-slate-50 border-b border-slate-200">
+                      <th className="p-4 font-semibold text-sm text-slate-600">Name</th>
+                      <th className="p-4 font-semibold text-sm text-slate-600">Email</th>
+                      <th className="p-4 font-semibold text-sm text-slate-600">Password</th>
+                      <th className="p-4 font-semibold text-sm text-slate-600">Role</th>
+                      <th className="p-4 font-semibold text-sm text-slate-600">Status</th>
+                      <th className="p-4 font-semibold text-sm text-slate-600 text-right">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-white/5">
+                  <tbody className="divide-y divide-slate-100">
                     {tenantAccounts.map((account) => (
-                      <tr key={account.id} className="hover:bg-white/5 transition-colors">
+                      <tr key={account.id} className="hover:bg-slate-50/50 transition-colors">
                         {isAccountEditing === account.id ? (
                           <td colSpan={6} className="p-4">
                             <form onSubmit={(e) => handleUpdateAccount(e, account.id)} className="flex items-center gap-4">
@@ -875,11 +875,11 @@ export default function TenantsPage() {
                           </td>
                         ) : (
                           <>
-                            <td className="p-4 text-sm text-white font-medium">{account.full_name}</td>
-                            <td className="p-4 text-sm text-text-muted">{account.email}</td>
-                            <td className="p-4 text-sm text-text-muted font-mono">{account.password}</td>
+                            <td className="p-4 text-sm text-slate-900 font-semibold">{account.full_name}</td>
+                            <td className="p-4 text-sm text-slate-500">{account.email}</td>
+                            <td className="p-4 text-sm text-slate-500 font-mono">{account.password}</td>
                             <td className="p-4">
-                              <span className={`text-[10px] font-bold px-2 py-1 rounded-md border uppercase tracking-wider ${account.role === 'admin' ? 'bg-purple-500/10 text-purple-500 border-purple-500/20' : 'bg-blue-500/10 text-blue-500 border-blue-500/20'}`}>
+                              <span className={`text-[10px] font-bold px-2 py-1 rounded-md border uppercase tracking-wider ${account.role === 'admin' ? 'bg-purple-100 text-purple-700 border-purple-200' : 'bg-blue-100 text-blue-700 border-blue-200'}`}>
                                 {account.role}
                               </span>
                             </td>
@@ -892,13 +892,13 @@ export default function TenantsPage() {
                               <div className="flex justify-end gap-2">
                                 <button 
                                   onClick={() => setIsAccountEditing(account.id)}
-                                  className="p-2 hover:bg-white/10 rounded-lg transition-colors text-blue-400"
+                                  className="p-2 hover:bg-slate-50 rounded-lg transition-colors text-indigo-600"
                                 >
                                   <Edit2 className="w-4 h-4" />
                                 </button>
                                 <button 
                                   onClick={() => handleDeleteAccount(account.id)}
-                                  className="p-2 hover:bg-white/10 rounded-lg transition-colors text-red-400"
+                                  className="p-2 hover:bg-slate-50 rounded-lg transition-colors text-rose-600"
                                 >
                                   <Trash2 className="w-4 h-4" />
                                 </button>
@@ -916,31 +916,31 @@ export default function TenantsPage() {
         )}
         {/* Add Installment Modal */}
         {isInstallmentModalOpen && selectedTenantForInstallment && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm overflow-y-auto">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm overflow-y-auto">
             <motion.div 
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="glass-card w-full max-w-md p-8 relative my-8"
+              className="card-geometric w-full max-w-md p-8 relative my-8"
             >
               <button 
                 onClick={() => {
                   setIsInstallmentModalOpen(false);
                   setSelectedTenantForInstallment(null);
                 }}
-                className="absolute top-4 right-4 p-2 hover:bg-white/5 rounded-lg transition-colors"
+                className="absolute top-4 right-4 p-2 hover:bg-slate-50 rounded-lg transition-colors text-slate-400"
               >
                 <X className="w-5 h-5" />
               </button>
 
-              <h3 className="text-2xl font-display font-bold mb-2 text-white">Add Installment</h3>
-              <p className="text-text-muted text-sm mb-6">Recording payment for {selectedTenantForInstallment.company_name}</p>
+              <h3 className="text-2xl font-display font-bold mb-2 text-slate-900">Add Installment</h3>
+              <p className="text-slate-500 text-sm mb-6">Recording payment for {selectedTenantForInstallment.company_name}</p>
               
               <form onSubmit={handleSaveInstallment} className="space-y-4">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-text-muted">Amount Paid (₹)</label>
+                  <label className="text-sm font-medium text-slate-500">Amount Paid (₹)</label>
                   <div className="relative">
-                    <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" />
+                    <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                     <input 
                       name="amount" 
                       type="number" 
@@ -950,11 +950,11 @@ export default function TenantsPage() {
                       max={selectedTenantForInstallment.amount_pending}
                     />
                   </div>
-                  <p className="text-[10px] text-text-muted">Max pending: ₹{selectedTenantForInstallment.amount_pending.toLocaleString()}</p>
+                  <p className="text-[10px] text-slate-400">Max pending: ₹{selectedTenantForInstallment.amount_pending.toLocaleString()}</p>
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-text-muted">Payment Date</label>
+                  <label className="text-sm font-medium text-slate-500">Payment Date</label>
                   <input 
                     name="date" 
                     type="date" 
@@ -965,8 +965,8 @@ export default function TenantsPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-text-muted">Mode of Transaction</label>
-                  <select name="mode" required className="input-field w-full bg-secondary text-white">
+                  <label className="text-sm font-medium text-slate-500">Mode of Transaction</label>
+                  <select name="mode" required className="input-field w-full">
                     <option value="Cash">Cash</option>
                     <option value="Online">Online</option>
                     <option value="Cheque">Cheque</option>
@@ -975,7 +975,7 @@ export default function TenantsPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-text-muted">Notes (Optional)</label>
+                  <label className="text-sm font-medium text-slate-500">Notes (Optional)</label>
                   <textarea 
                     name="notes" 
                     className="input-field w-full min-h-[80px]" 
@@ -1016,16 +1016,16 @@ function StatCard({ icon: Icon, label, value, color }: any) {
   };
 
   return (
-    <div className="glass-card p-4 flex items-center gap-4">
+    <div className="card-geometric p-5 flex items-center gap-4">
       <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${colors[color]}`}>
         <Icon className="w-6 h-6" />
       </div>
       <div>
-        <p className="text-xl font-bold text-white">
+        <p className="text-2xl font-display font-black text-slate-900 leading-none">
           {label.toLowerCase().includes('revenue') ? '₹' : ''}
           {typeof value === 'number' ? value.toLocaleString() : value}
         </p>
-        <p className="text-xs text-text-muted">{label}</p>
+        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">{label}</p>
       </div>
     </div>
   );
@@ -1033,9 +1033,9 @@ function StatCard({ icon: Icon, label, value, color }: any) {
 
 function PlanBadge({ plan }: { plan: string }) {
   const styles: any = {
-    basic: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
-    pro: 'bg-purple-500/10 text-purple-500 border-purple-500/20',
-    enterprise: 'bg-accent/10 text-accent border-accent/20',
+    basic: 'bg-blue-100 text-blue-700 border-blue-200',
+    pro: 'bg-indigo-100 text-indigo-700 border-indigo-200',
+    enterprise: 'bg-amber-100 text-amber-700 border-amber-200',
   };
 
   const p = plan.toLowerCase();
@@ -1048,18 +1048,13 @@ function PlanBadge({ plan }: { plan: string }) {
 }
 
 function StatusBadge({ status }: { status: string }) {
-  const styles: any = {
-    active: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',
-    suspended: 'bg-red-500/10 text-red-500 border-red-500/20',
-  };
-
   const s = status.toLowerCase();
   const isActive = s === 'active';
 
   return (
     <div className="flex items-center gap-2">
-      <div className={`w-2 h-2 rounded-full ${isActive ? 'bg-emerald-500' : 'bg-red-500'}`} />
-      <span className={`text-xs font-medium ${isActive ? 'text-emerald-500' : 'text-red-500'}`}>
+      <div className={`w-2 h-2 rounded-full ${isActive ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.5)]'}`} />
+      <span className={`text-xs font-bold ${isActive ? 'text-emerald-600' : 'text-rose-600'}`}>
         {status.charAt(0).toUpperCase() + status.slice(1)}
       </span>
     </div>

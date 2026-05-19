@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { LayoutDashboard, Users, UserCheck, CreditCard, Bell, LogOut, Menu, X, ShieldCheck, FileText, BookOpen } from 'lucide-react';
+import { useRouter, usePathname } from 'next/navigation';
+import { LayoutDashboard, Users, UserCheck, CreditCard, Bell, LogOut, Menu, X, ShieldCheck, FileText, BookOpen, Target } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 import { motion } from 'motion/react';
@@ -10,6 +10,7 @@ import BottomNav from '@/components/bottom-nav';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
+  const pathname = usePathname();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [unreadCount, setUnreadCount] = useState(0);
   const [user, setUser] = useState<{ name: string; role: string; email: string } | null>(null);
@@ -70,14 +71,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   const navItems = [
     { name: 'Dashboard', icon: LayoutDashboard, href: '/dashboard', roles: ['super_admin', 'admin', 'staff'] },
-    { name: 'Leads', icon: UserCheck, href: '/crm', roles: ['admin', 'staff'] },
+    { name: 'CRM', icon: Target, href: '/crm', roles: ['super_admin', 'admin', 'staff'] },
     { name: 'Tenants', icon: ShieldCheck, href: '/tenants', roles: ['super_admin'] },
-    { name: 'Courses', icon: BookOpen, href: '/courses', roles: ['admin', 'staff'] },
-    { name: 'Students', icon: Users, href: '/students', roles: ['admin', 'staff'] },
-    { name: 'Attendance', icon: UserCheck, href: '/attendance', roles: ['admin', 'staff'] },
-    { name: 'Fees', icon: CreditCard, href: '/fees', roles: ['admin', 'staff'] },
-    { name: 'Reports', icon: FileText, href: '/reports', roles: ['admin', 'staff'] },
-    { name: 'Announcements', icon: Bell, href: '/messages', roles: ['admin', 'staff'] },
+    { name: 'Courses', icon: BookOpen, href: '/courses', roles: ['super_admin', 'admin', 'staff'] },
+    { name: 'Students', icon: Users, href: '/students', roles: ['super_admin', 'admin', 'staff'] },
+    { name: 'Attendance', icon: UserCheck, href: '/attendance', roles: ['super_admin', 'admin', 'staff'] },
+    { name: 'Fees', icon: CreditCard, href: '/fees', roles: ['super_admin', 'admin', 'staff'] },
+    { name: 'Reports', icon: FileText, href: '/reports', roles: ['super_admin', 'admin', 'staff'] },
+    { name: 'Announcements', icon: Bell, href: '/messages', roles: ['super_admin', 'admin', 'staff'] },
   ].filter(item => item.roles.includes(user.role));
 
   const handleLogout = () => {
@@ -110,7 +111,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         <nav className="flex-1 px-4 space-y-1 mt-4">
           {navItems.map((item, index) => {
-            const isActive = typeof window !== 'undefined' && window.location.pathname === item.href;
+            const isActive = pathname === item.href;
             return (
               <Link
                 key={`${item.name}-${index}`}
@@ -162,7 +163,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </motion.aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col h-screen overflow-hidden pb-20 md:pb-0">
+      <main className="flex-1 flex flex-col h-screen overflow-hidden">
         {/* Header */}
         <header className="h-20 bg-white border-b border-slate-200 flex items-center justify-between px-4 md:px-8 z-10 shadow-sm">
           <div className="flex items-center gap-4">
@@ -208,7 +209,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </header>
 
         {/* Page Content */}
-        <div className="flex-1 overflow-y-auto p-4 md:p-8">
+        <div className="flex-1 overflow-y-auto p-4 md:p-8 pb-24 md:pb-8">
           {children}
         </div>
         <BottomNav />

@@ -43,6 +43,21 @@ export default function AttendancePage() {
   const [scanResult, setScanResult] = useState<string | null>(null);
   const [isLocked, setIsLocked] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [tenants, setTenants] = useState<{ id: string; company_name: string }[]>([]);
+  const [selectedTenantId, setSelectedTenantId] = useState<string | 'all'>('all');
+  const [userRole, setUserRole] = useState<string | null>(null);
+
+  useEffect(() => {
+    const role = localStorage.getItem('role');
+    setUserRole(role);
+    if (role === 'super_admin') {
+      const fetchTenantsList = async () => {
+        const { data } = await supabase.from('tenants').select('id, company_name').order('company_name');
+        setTenants(data || []);
+      };
+      fetchTenantsList();
+    }
+  }, []);
 
   const fetchData = useCallback(async () => {
     try {
@@ -50,10 +65,25 @@ export default function AttendancePage() {
       const tenantId = localStorage.getItem('tenant_id');
       const role = localStorage.getItem('role');
 
+      if (!role) {
+        setIsLoading(false);
+        return;
+      }
+
+      if (role === 'super_admin' && selectedTenantId === 'all') {
+        setStudents([]);
+        setCourses([]);
+        setAttendance([]);
+        setIsLoading(false);
+        return;
+      }
+
+      const activeTenantId = role === 'super_admin' ? selectedTenantId : tenantId;
+
       // Fetch students
       let studentQuery = supabase.from('students').select('*').eq('status', 'active');
-      if (role !== 'super_admin' && tenantId) {
-        studentQuery = studentQuery.eq('tenant_id', tenantId);
+      if (activeTenantId) {
+        studentQuery = studentQuery.eq('tenant_id', activeTenantId);
       }
       const { data: studentsData } = await studentQuery;
       
@@ -61,8 +91,8 @@ export default function AttendancePage() {
 
       // Fetch courses
       let courseQuery = supabase.from('courses').select('*').eq('status', 'active');
-      if (role !== 'super_admin' && tenantId) {
-        courseQuery = courseQuery.eq('tenant_id', tenantId);
+      if (activeTenantId) {
+        courseQuery = courseQuery.eq('tenant_id', activeTenantId);
       }
       const { data: coursesData } = await courseQuery;
       setCourses(coursesData || []);
@@ -73,8 +103,8 @@ export default function AttendancePage() {
 
       // Fetch attendance for selected date and class
       let attendanceQuery = supabase.from('attendance').select('*').eq('date', selectedDate).eq('class_name', selectedClass);
-      if (role !== 'super_admin' && tenantId) {
-        attendanceQuery = attendanceQuery.eq('tenant_id', tenantId);
+      if (activeTenantId) {
+        attendanceQuery = attendanceQuery.eq('tenant_id', activeTenantId);
       }
       const { data: attendanceData } = await attendanceQuery;
       
@@ -88,7 +118,7 @@ export default function AttendancePage() {
     } finally {
       setIsLoading(false);
     }
-  }, [selectedDate, selectedClass]);
+  }, [selectedDate, selectedClass, selectedTenantId]);
 
   useEffect(() => {
     fetchData();
@@ -256,8 +286,8 @@ export default function AttendancePage() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-8">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="space-y-8 pb-24 md:pb-0">
+        <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-100">
               <UserCheck className="w-6 h-6 text-white" />
@@ -277,19 +307,37 @@ export default function AttendancePage() {
               </div>
             </div>
           </div>
-          <div className="flex bg-slate-100 p-1.5 rounded-xl border border-slate-200 shadow-sm w-full md:w-auto">
-            <button 
-              onClick={() => setActiveTab('manual')}
-              className={`flex-1 md:flex-none px-4 md:px-6 py-2 rounded-lg text-sm font-bold transition-all ${activeTab === 'manual' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
-            >
-              Manual List
-            </button>
-            <button 
-              onClick={() => setActiveTab('qr')}
-              className={`flex-1 md:flex-none px-4 md:px-6 py-2 rounded-lg text-sm font-bold transition-all ${activeTab === 'qr' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
-            >
-              QR Scanner
-            </button>
+          <div className="flex flex-col md:flex-row items-center gap-3">
+            {userRole === 'super_admin' && (
+              <div className="relative w-full md:w-64">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                <select 
+                  className="input-field pl-10 w-full appearance-none pr-10"
+                  value={selectedTenantId}
+                  onChange={(e) => setSelectedTenantId(e.target.value)}
+                >
+                  <option value="all">Select Tenant Context...</option>
+                  {tenants.map(t => (
+                    <option key={t.id} value={t.id}>{t.company_name}</option>
+                  ))}
+                </select>
+                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+              </div>
+            )}
+            <div className="flex bg-slate-100 p-1.5 rounded-xl border border-slate-200 shadow-sm w-full md:w-auto">
+              <button 
+                onClick={() => setActiveTab('manual')}
+                className={`flex-1 md:flex-none px-4 md:px-6 py-2 rounded-lg text-sm font-bold transition-all ${activeTab === 'manual' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+              >
+                Manual List
+              </button>
+              <button 
+                onClick={() => setActiveTab('qr')}
+                className={`flex-1 md:flex-none px-4 md:px-6 py-2 rounded-lg text-sm font-bold transition-all ${activeTab === 'qr' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+              >
+                QR Scanner
+              </button>
+            </div>
           </div>
         </div>
 
@@ -322,7 +370,7 @@ export default function AttendancePage() {
                   />
                 </div>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                 <button onClick={fetchData} className="btn-secondary w-full shadow-sm font-bold">Refresh Data</button>
                 <button onClick={downloadDailyPDF} className="btn-secondary w-full shadow-sm font-bold">
                   <FileText className="w-4 h-4" />

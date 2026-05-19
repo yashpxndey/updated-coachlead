@@ -52,6 +52,8 @@ export default function StudentsPage() {
   const [profilePreview, setProfilePreview] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [enrollmentNumber, setEnrollmentNumber] = useState('');
+  const [tenants, setTenants] = useState<{ id: string; company_name: string }[]>([]);
+  const [selectedTenantId, setSelectedTenantId] = useState<string | 'all'>('all');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const generateEnrollmentNumber = () => {
@@ -61,25 +63,53 @@ export default function StudentsPage() {
   }
 
   useEffect(() => {
+    const role = localStorage.getItem('role');
     const userData = {
       name: localStorage.getItem('userName') || localStorage.getItem('userEmail')?.split('@')[0] || 'User',
-      role: localStorage.getItem('role') || 'staff',
+      role: role || 'staff',
       email: localStorage.getItem('userEmail') || '',
     };
     setTimeout(() => {
       setUser(userData);
     }, 0);
+
+    if (role === 'super_admin') {
+      const fetchTenantsList = async () => {
+        const { data } = await supabase.from('tenants').select('id, company_name').order('company_name');
+        setTenants(data || []);
+      };
+      fetchTenantsList();
+    }
   }, []);
 
   const fetchStudents = useCallback(async () => {
     try {
+      setIsLoading(true);
       const tenantId = localStorage.getItem('tenant_id');
       const role = localStorage.getItem('role');
       
+      if (!role) {
+        setIsLoading(false);
+        return;
+      }
+
       let query = supabase.from('students').select('*');
       
-      if (role !== 'super_admin' && tenantId) {
+      if (role === 'super_admin') {
+        if (selectedTenantId !== 'all') {
+          query = query.eq('tenant_id', selectedTenantId);
+        } else {
+          setStudents([]);
+          setCourses([]);
+          setIsLoading(false);
+          return;
+        }
+      } else if (tenantId) {
         query = query.eq('tenant_id', tenantId);
+      } else {
+        setStudents([]);
+        setIsLoading(false);
+        return;
       }
       
       const { data, error } = await query.order('created_at', { ascending: false });
@@ -89,7 +119,9 @@ export default function StudentsPage() {
 
       // Fetch courses for dropdowns
       let courseQuery = supabase.from('courses').select('*').eq('status', 'active');
-      if (role !== 'super_admin' && tenantId) {
+      if (role === 'super_admin') {
+        courseQuery = courseQuery.eq('tenant_id', selectedTenantId);
+      } else if (tenantId) {
         courseQuery = courseQuery.eq('tenant_id', tenantId);
       }
       const { data: coursesData } = await courseQuery;
@@ -99,7 +131,7 @@ export default function StudentsPage() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [selectedTenantId]);
 
   useEffect(() => {
     fetchStudents();
@@ -334,15 +366,31 @@ export default function StudentsPage() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
+      <div className="space-y-6 pb-24 md:pb-0">
         {/* Header Actions */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
           <div>
             <h2 className="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">Student Directory</h2>
             <p className="text-sm md:text-base text-slate-500">Manage and monitor all students in your academy</p>
           </div>
-          <div className="flex flex-col sm:flex-row items-center gap-3">
-            <button onClick={exportPDF} className="btn-secondary w-full sm:w-auto shadow-sm">
+          <div className="flex flex-col md:flex-row items-center gap-3">
+            {user?.role === 'super_admin' && (
+              <div className="relative w-full md:w-64">
+                <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                <select 
+                  className="input-field pl-10 w-full appearance-none pr-10"
+                  value={selectedTenantId}
+                  onChange={(e) => setSelectedTenantId(e.target.value)}
+                >
+                  <option value="all">Select Tenant Context...</option>
+                  {tenants.map(t => (
+                    <option key={t.id} value={t.id}>{t.company_name}</option>
+                  ))}
+                </select>
+                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+              </div>
+            )}
+            <button onClick={exportPDF} className="btn-secondary w-full md:w-auto shadow-sm">
               <FileDown className="w-4 h-4" />
               Export PDF
             </button>
@@ -353,7 +401,7 @@ export default function StudentsPage() {
                 setEnrollmentNumber(generateEnrollmentNumber());
                 setIsModalOpen(true); 
               }} 
-              className="btn-primary w-full sm:w-auto shadow-lg shadow-indigo-100"
+              className="btn-primary w-full md:w-auto shadow-lg shadow-indigo-100"
             >
               <Plus className="w-4 h-4" />
               Add Student

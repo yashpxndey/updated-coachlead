@@ -12,6 +12,7 @@ import {
   User, 
   ChevronRight, 
   ChevronLeft,
+  ChevronDown,
   Filter,
   X,
   Loader2,
@@ -54,6 +55,23 @@ export default function CRMPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [editingLead, setEditingLead] = useState<Lead | null>(null);
+  const [tenants, setTenants] = useState<{ id: string; company_name: string }[]>([]);
+  const [selectedTenantId, setSelectedTenantId] = useState<string | 'all'>('all');
+  const [userContext, setUserContext] = useState<{ role: string | null, tenantId: string | null }>({ role: null, tenantId: null });
+
+  useEffect(() => {
+    const role = localStorage.getItem('role');
+    const tenantId = localStorage.getItem('tenant_id');
+    setUserContext({ role, tenantId });
+
+    if (role === 'super_admin') {
+      const fetchTenantsList = async () => {
+        const { data } = await supabase.from('tenants').select('id, company_name').order('company_name');
+        setTenants(data || []);
+      };
+      fetchTenantsList();
+    }
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = () => setOpenMenuId(null);
@@ -64,13 +82,32 @@ export default function CRMPage() {
   const fetchLeads = useCallback(async () => {
     try {
       setIsLoading(true);
-      const tenantId = localStorage.getItem('tenant_id');
-      const role = localStorage.getItem('role');
+      const { role, tenantId } = userContext;
+
+      if (!role) {
+        setIsLoading(false);
+        return;
+      }
 
       let query = supabase.from('leads').select('*');
 
-      if (role !== 'super_admin' && tenantId) {
+      if (role === 'super_admin') {
+        if (selectedTenantId !== 'all') {
+          query = query.eq('tenant_id', selectedTenantId);
+        } else {
+          // If Super Admin has NOT selected a tenant, we show nothing or a specific platform view
+          // The user wants: "NOT automatically see tenant-specific leads"
+          setLeads([]);
+          setIsLoading(false);
+          return;
+        }
+      } else if (tenantId) {
         query = query.eq('tenant_id', tenantId);
+      } else {
+        // Normal user with no tenant_id - shouldn't happen but safe-guard
+        setLeads([]);
+        setIsLoading(false);
+        return;
       }
 
       const { data, error } = await query.order('created_at', { ascending: false });
@@ -87,13 +124,13 @@ export default function CRMPage() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [selectedTenantId]);
 
   useEffect(() => {
     fetchLeads();
 
     const sub = supabase
-      .channel('leads-all')
+      .channel('leads-changes')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'leads' }, () => {
         fetchLeads();
       })
@@ -102,7 +139,7 @@ export default function CRMPage() {
     return () => {
       supabase.removeChannel(sub);
     };
-  }, [fetchLeads]);
+  }, [fetchLeads, selectedTenantId, userContext.role]);
 
   const moveLead = async (leadId: string, newStatus: string) => {
     try {
@@ -143,9 +180,11 @@ export default function CRMPage() {
         return;
       }
 
-      const tenantId = localStorage.getItem('tenant_id');
-      if (!tenantId || tenantId === 'null') {
-        alert('No tenant found. Please login again.');
+      const { role, tenantId: localTenantId } = userContext;
+      const finalTenantId = role === 'super_admin' ? selectedTenantId : localTenantId;
+      
+      if (!finalTenantId || finalTenantId === 'all') {
+        alert('Active tenant context missing. Please select a tenant.');
         return;
       }
 
@@ -154,7 +193,7 @@ export default function CRMPage() {
       const { data: student, error: studentError } = await supabase
         .from('students')
         .insert([{
-          tenant_id: tenantId,
+          tenant_id: finalTenantId,
           full_name: lead.full_name,
           phone: lead.phone,
           email: lead.email,
@@ -204,8 +243,7 @@ export default function CRMPage() {
     if (!confirm('Are you sure you want to delete this lead?')) return;
     
     try {
-      const tenantId = localStorage.getItem('tenant_id');
-      const role = localStorage.getItem('role');
+      const { role, tenantId } = userContext;
 
       let query = supabase
         .from('leads')
@@ -228,7 +266,14 @@ export default function CRMPage() {
     e.preventDefault();
     setIsSaving(true);
     const formData = new FormData(e.currentTarget);
-    const tenantId = localStorage.getItem('tenant_id');
+    const { role, tenantId: localTenantId } = userContext;
+    const finalTenantId = role === 'super_admin' ? selectedTenantId : localTenantId;
+
+    if (!finalTenantId || finalTenantId === 'all') {
+      alert('Please select a target tenant before creating or updating a lead.');
+      setIsSaving(false);
+      return;
+    }
 
     const leadData = {
       full_name: formData.get('full_name'),
@@ -238,7 +283,7 @@ export default function CRMPage() {
       source: formData.get('source'),
       course_interested: formData.get('course'),
       notes: formData.get('notes'),
-      tenant_id: tenantId
+      tenant_id: finalTenantId
     };
 
     try {
@@ -274,14 +319,30 @@ export default function CRMPage() {
 
   return (
     <DashboardLayout>
-      <div className="h-[calc(100vh-160px)] flex flex-col gap-8">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
+      <div className="h-[calc(100vh-160px)] flex flex-col gap-8 pb-24 md:pb-0">
+        <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
+          <div className="flex-1">
             <h2 className="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">Lead Management</h2>
             <p className="text-sm md:text-base text-slate-500">Track and convert your academy prospects</p>
           </div>
-          <div className="flex flex-col sm:flex-row items-center gap-3">
-            <div className="relative flex items-center w-full sm:w-80">
+          <div className="flex flex-col md:flex-row items-center gap-3">
+            {userContext.role === 'super_admin' && (
+              <div className="relative w-full md:w-64">
+                <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                <select 
+                  className="input-field pl-10 w-full appearance-none pr-10"
+                  value={selectedTenantId}
+                  onChange={(e) => setSelectedTenantId(e.target.value)}
+                >
+                  <option value="all">Select Tenant Context...</option>
+                  {tenants.map(t => (
+                    <option key={t.id} value={t.id}>{t.company_name}</option>
+                  ))}
+                </select>
+                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+              </div>
+            )}
+            <div className="relative flex items-center w-full md:w-80">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none z-10 shrink-0" />
               <input 
                 type="text" 
@@ -293,7 +354,7 @@ export default function CRMPage() {
             </div>
             <button
               onClick={() => setIsModalOpen(true)}
-              className="btn-primary w-full sm:w-auto shadow-lg shadow-indigo-100"
+              className="btn-primary w-full md:w-auto shadow-lg shadow-indigo-100"
             >
               <Plus className="w-4 h-4" />
               Add Lead
@@ -480,7 +541,7 @@ export default function CRMPage() {
                   <label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">Full Name</label>
                   <input name="full_name" required className="input-field w-full text-base md:text-sm" defaultValue={editingLead?.full_name || ''} placeholder="John Doe" />
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">Email</label>
                     <input name="email" type="email" className="input-field w-full text-base md:text-sm" defaultValue={editingLead?.email || ''} placeholder="john@example.com" />
@@ -490,7 +551,7 @@ export default function CRMPage() {
                     <input name="phone" className="input-field w-full text-base md:text-sm" defaultValue={editingLead?.phone || ''} placeholder="+1 234..." />
                   </div>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">Source</label>
                     <select name="source" className="input-field w-full bg-slate-50 text-base md:text-sm" defaultValue={editingLead?.source || 'Direct'}>
@@ -514,9 +575,9 @@ export default function CRMPage() {
                   <input type="hidden" name="status" value={editingLead.status} />
                 )}
 
-                <div className="pt-4 flex flex-col sm:flex-row gap-3">
-                  <button type="button" onClick={() => { setIsModalOpen(false); setEditingLead(null); }} className="flex-1 px-6 py-3 bg-slate-50 text-slate-600 font-bold rounded-xl hover:bg-slate-100 transition-all border border-slate-200 order-2 sm:order-1">Cancel</button>
-                  <button type="submit" disabled={isSaving} className="flex-1 px-6 py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 shadow-lg shadow-indigo-100 transition-all disabled:opacity-50 order-1 sm:order-2">
+                <div className="pt-4 flex flex-col md:flex-row gap-3">
+                  <button type="button" onClick={() => { setIsModalOpen(false); setEditingLead(null); }} className="flex-1 px-6 py-3 bg-slate-50 text-slate-600 font-bold rounded-xl hover:bg-slate-100 transition-all border border-slate-200 order-2 md:order-1">Cancel</button>
+                  <button type="submit" disabled={isSaving} className="flex-1 px-6 py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 shadow-lg shadow-indigo-100 transition-all disabled:opacity-50 order-1 md:order-2">
                     {isSaving ? 'Saving...' : editingLead ? 'Update Lead' : 'Create Lead'}
                   </button>
                 </div>

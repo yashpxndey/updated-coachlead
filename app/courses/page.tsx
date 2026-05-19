@@ -30,6 +30,21 @@ export default function CoursesPage() {
   const [editingCourse, setEditingCourse] = useState<Course | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [tenants, setTenants] = useState<{ id: string; company_name: string }[]>([]);
+  const [selectedTenantId, setSelectedTenantId] = useState<string | 'all'>('all');
+  const [userRole, setUserRole] = useState<string | null>(null);
+
+  useEffect(() => {
+    const role = localStorage.getItem('role');
+    setUserRole(role);
+    if (role === 'super_admin') {
+      const fetchTenantsList = async () => {
+        const { data } = await supabase.from('tenants').select('id, company_name').order('company_name');
+        setTenants(data || []);
+      };
+      fetchTenantsList();
+    }
+  }, []);
 
   const fetchCourses = useCallback(async () => {
     try {
@@ -37,10 +52,27 @@ export default function CoursesPage() {
       const tenantId = localStorage.getItem('tenant_id');
       const role = localStorage.getItem('role');
 
+      if (!role) {
+        setIsLoading(false);
+        return;
+      }
+
       let query = supabase.from('courses').select('*');
 
-      if (role !== 'super_admin' && tenantId) {
+      if (role === 'super_admin') {
+        if (selectedTenantId !== 'all') {
+          query = query.eq('tenant_id', selectedTenantId);
+        } else {
+          setCourses([]);
+          setIsLoading(false);
+          return;
+        }
+      } else if (tenantId) {
         query = query.eq('tenant_id', tenantId);
+      } else {
+        setCourses([]);
+        setIsLoading(false);
+        return;
       }
 
       const { data, error } = await query.order('created_at', { ascending: false });
@@ -52,7 +84,7 @@ export default function CoursesPage() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [selectedTenantId]);
 
   useEffect(() => {
     fetchCourses();
@@ -67,13 +99,21 @@ export default function CoursesPage() {
     return () => {
       supabase.removeChannel(sub);
     };
-  }, [fetchCourses]);
+  }, [fetchCourses, selectedTenantId]);
 
   const handleSaveCourse = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSaving(true);
     const formData = new FormData(e.currentTarget);
-    const tenantId = localStorage.getItem('tenant_id');
+    const localTenantId = localStorage.getItem('tenant_id');
+    const role = localStorage.getItem('role');
+    const finalTenantId = role === 'super_admin' ? selectedTenantId : localTenantId;
+
+    if (!finalTenantId || finalTenantId === 'all') {
+      alert('Please select a target tenant before saving.');
+      setIsSaving(false);
+      return;
+    }
 
     const courseData = {
       course_name: formData.get('course_name') as string,
@@ -82,7 +122,7 @@ export default function CoursesPage() {
       fees: parseFloat(formData.get('fees') as string),
       description: formData.get('description') as string,
       status: formData.get('status') as 'active' | 'inactive',
-      tenant_id: tenantId
+      tenant_id: finalTenantId
     };
 
     try {
@@ -143,8 +183,8 @@ export default function CoursesPage() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-8">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+      <div className="space-y-8 pb-24 md:pb-0">
+        <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-6">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-100">
               <BookOpen className="w-6 h-6 text-white" />
@@ -154,19 +194,37 @@ export default function CoursesPage() {
               <p className="text-sm text-slate-500 font-medium">Configure departments, batches, and curriculum tiers</p>
             </div>
           </div>
-          <button
-            onClick={() => {
-              setEditingCourse(null);
-              setIsModalOpen(true);
-            }}
-            className="btn-primary shadow-lg shadow-indigo-100 font-bold px-8"
-          >
-            <Plus className="w-5 h-5" />
-            Add New Course
-          </button>
+          <div className="flex flex-col md:flex-row items-center gap-3">
+            {userRole === 'super_admin' && (
+              <div className="relative w-full md:w-64">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                <select 
+                  className="input-field pl-10 w-full appearance-none pr-10"
+                  value={selectedTenantId}
+                  onChange={(e) => setSelectedTenantId(e.target.value)}
+                >
+                  <option value="all">Select Tenant Context...</option>
+                  {tenants.map(t => (
+                    <option key={t.id} value={t.id}>{t.company_name}</option>
+                  ))}
+                </select>
+                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+              </div>
+            )}
+            <button
+              onClick={() => {
+                setEditingCourse(null);
+                setIsModalOpen(true);
+              }}
+              className="btn-primary shadow-lg shadow-indigo-100 font-bold px-8 w-full md:w-auto"
+            >
+              <Plus className="w-5 h-5" />
+              Add New Course
+            </button>
+          </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-4">
+        <div className="flex flex-col md:flex-row gap-4">
           <div className="relative flex-1 group flex items-center">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-indigo-600 transition-colors pointer-events-none z-10 shrink-0" />
             <input
