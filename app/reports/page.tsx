@@ -1585,7 +1585,7 @@ export default function ReportsPage() {
                       />
                     ) : (
                       <p className="text-xs text-indigo-100 leading-relaxed font-medium italic">
-                        "{reportData.additional.remarks || 'No qualitative narrative documented for this cycle.'}"
+                        &quot;{reportData.additional.remarks || 'No qualitative narrative documented for this cycle.'}&quot;
                       </p>
                     )}
                   </div>

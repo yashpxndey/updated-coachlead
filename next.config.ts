@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  distDir: 'dist',
+  output: "standalone",
   reactStrictMode: false,
   eslint: {
     ignoreDuringBuilds: true
