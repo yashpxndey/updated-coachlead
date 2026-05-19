@@ -277,16 +277,16 @@ export default function AttendancePage() {
               </div>
             </div>
           </div>
-          <div className="flex bg-slate-100 p-1.5 rounded-xl border border-slate-200 shadow-sm">
+          <div className="flex bg-slate-100 p-1.5 rounded-xl border border-slate-200 shadow-sm w-full md:w-auto">
             <button 
               onClick={() => setActiveTab('manual')}
-              className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${activeTab === 'manual' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+              className={`flex-1 md:flex-none px-4 md:px-6 py-2 rounded-lg text-sm font-bold transition-all ${activeTab === 'manual' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
             >
               Manual List
             </button>
             <button 
               onClick={() => setActiveTab('qr')}
-              className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${activeTab === 'qr' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+              className={`flex-1 md:flex-none px-4 md:px-6 py-2 rounded-lg text-sm font-bold transition-all ${activeTab === 'qr' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
             >
               QR Scanner
             </button>
@@ -322,11 +322,9 @@ export default function AttendancePage() {
                   />
                 </div>
               </div>
-              <div className="flex gap-2">
-                <button onClick={fetchData} className="btn-secondary flex-1 shadow-sm font-bold">Refresh Data</button>
-              </div>
-              <div className="flex gap-2">
-                <button onClick={downloadDailyPDF} className="btn-secondary flex-1 shadow-sm font-bold">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <button onClick={fetchData} className="btn-secondary w-full shadow-sm font-bold">Refresh Data</button>
+                <button onClick={downloadDailyPDF} className="btn-secondary w-full shadow-sm font-bold">
                   <FileText className="w-4 h-4" />
                   PDF Report
                 </button>
@@ -334,23 +332,23 @@ export default function AttendancePage() {
             </div>
 
             <div className="card-geometric overflow-hidden">
-              <div className="p-4 border-b border-slate-100 flex items-center justify-between gap-4">
-                <div className="relative flex-1 max-w-md flex items-center">
+              <div className="p-4 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="relative flex-1 w-full md:max-w-md flex items-center">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none z-10 shrink-0" />
                   <input 
                     type="text" 
                     placeholder="Search enrolled students..." 
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="input-field pl-10 py-2 w-full text-sm" 
+                    className="input-field pl-10 py-2 w-full text-base md:text-sm" 
                   />
                 </div>
-                <div className="flex items-center gap-4 text-xs font-bold text-slate-400 uppercase tracking-widest">
+                <div className="flex items-center gap-4 text-xs font-bold text-slate-400 uppercase tracking-widest px-2">
                   Total: <span className="text-slate-900">{filteredStudents.length} Students</span>
                 </div>
               </div>
               <div className="overflow-x-auto">
-                <table className="w-full text-left">
+                <table className="w-full text-left min-w-[800px]">
                   <thead>
                     <tr className="bg-slate-50 border-b border-slate-100">
                       <th className="p-4 px-6 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Student Information</th>
@@ -413,13 +411,13 @@ export default function AttendancePage() {
                   </tbody>
                 </table>
               </div>
-              <div className="p-6 bg-slate-50/50 border-t border-slate-100 flex justify-end items-center gap-6">
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Marked: <span className="text-emerald-600">{attendance.length}</span> / {filteredStudents.length}</p>
-                <div className="flex gap-3">
+              <div className="p-4 md:p-6 bg-slate-50/50 border-t border-slate-100 flex flex-col md:flex-row justify-end items-center gap-4 md:gap-6">
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest order-2 md:order-1">Marked: <span className="text-emerald-600">{attendance.length}</span> / {filteredStudents.length}</p>
+                <div className="flex w-full md:w-auto gap-3 order-1 md:order-2">
                   <button 
                     onClick={submitAndLock} 
                     disabled={isLocked || isLoading}
-                    className={`btn-primary px-8 shadow-lg shadow-indigo-100 font-bold ${isLocked ? 'opacity-50 cursor-not-allowed bg-slate-400 hover:bg-slate-400 shadow-none' : ''}`}
+                    className={`btn-primary w-full md:px-8 shadow-lg shadow-indigo-100 font-bold ${isLocked ? 'opacity-50 cursor-not-allowed bg-slate-400 hover:bg-slate-400 shadow-none' : ''}`}
                   >
                     {isLocked ? <Lock className="w-4 h-4" /> : null}
                     {isLocked ? 'Records Finalized' : 'Confirm & Finalize Records'}
@@ -432,8 +430,8 @@ export default function AttendancePage() {
 
         {activeTab === 'qr' && (
           <div className="max-w-3xl mx-auto space-y-8">
-            <div className="card-geometric p-12 text-center space-y-8 bg-white border-slate-200">
-              <div className="relative w-72 h-72 mx-auto">
+            <div className="card-geometric p-6 md:p-12 text-center space-y-6 md:space-y-8 bg-white border-slate-200">
+              <div className="relative w-56 h-56 md:w-72 md:h-72 mx-auto">
                 {/* Geometric Scanning Frame */}
                 <div className={`absolute -inset-4 border-2 rounded-[2rem] transition-all duration-500 ${isScanning ? 'border-indigo-600 border-dashed animate-spin-slow scale-105 opacity-100' : 'border-slate-100 opacity-50'}`} />
                 <div className={`absolute inset-0 border-4 rounded-3xl transition-all ${isScanning ? 'border-indigo-600 shadow-[0_0_40px_rgba(79,70,229,0.1)]' : 'border-slate-100'}`} />
@@ -488,30 +486,30 @@ export default function AttendancePage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="card-geometric p-6 flex items-center gap-5 bg-emerald-50/30 border-emerald-100">
-                <div className="w-14 h-14 rounded-2xl bg-white border border-emerald-100 shadow-sm flex items-center justify-center">
-                  <CheckCircle2 className="w-7 h-7 text-emerald-600" />
+              <div className="grid grid-cols-2 gap-3 md:gap-6">
+                <div className="card-geometric p-4 md:p-6 flex flex-col md:flex-row items-center gap-3 md:gap-5 bg-emerald-50/30 border-emerald-100 text-center md:text-left">
+                  <div className="w-10 h-10 md:w-14 md:h-14 rounded-2xl bg-white border border-emerald-100 shadow-sm flex items-center justify-center">
+                    <CheckCircle2 className="w-5 h-5 md:w-7 md:h-7 text-emerald-600" />
+                  </div>
+                  <div>
+                    <p className="text-xl md:text-3xl font-bold text-slate-900 tracking-tight">
+                      {attendance.filter(a => a.status === 'present').length}
+                    </p>
+                    <p className="text-[8px] md:text-[10px] font-bold text-emerald-600 uppercase tracking-widest mt-0.5">Present</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-3xl font-bold text-slate-900 tracking-tight">
-                    {attendance.filter(a => a.status === 'present').length}
-                  </p>
-                  <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest mt-0.5">Present Verified</p>
+                <div className="card-geometric p-4 md:p-6 flex flex-col md:flex-row items-center gap-3 md:gap-5 bg-rose-50/30 border-rose-100 text-center md:text-left">
+                  <div className="w-10 h-10 md:w-14 md:h-14 rounded-2xl bg-white border border-rose-100 shadow-sm flex items-center justify-center text-rose-600">
+                    <XCircle className="w-5 h-5 md:w-7 md:h-7" />
+                  </div>
+                  <div>
+                    <p className="text-xl md:text-3xl font-bold text-slate-900 tracking-tight">
+                      {filteredStudents.length - attendance.filter(a => a.status === 'present').length}
+                    </p>
+                    <p className="text-[8px] md:text-[10px] font-bold text-rose-600 uppercase tracking-widest mt-0.5">Pending</p>
+                  </div>
                 </div>
               </div>
-              <div className="card-geometric p-6 flex items-center gap-5 bg-rose-50/30 border-rose-100">
-                <div className="w-14 h-14 rounded-2xl bg-white border border-rose-100 shadow-sm flex items-center justify-center text-rose-600">
-                  <XCircle className="w-7 h-7" />
-                </div>
-                <div>
-                  <p className="text-3xl font-bold text-slate-900 tracking-tight">
-                    {filteredStudents.length - attendance.filter(a => a.status === 'present').length}
-                  </p>
-                  <p className="text-[10px] font-bold text-rose-600 uppercase tracking-widest mt-0.5">Pending Records</p>
-                </div>
-              </div>
-            </div>
           </div>
         )}
       </div>

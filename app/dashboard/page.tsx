@@ -227,8 +227,8 @@ export default function DashboardPage() {
         {/* Header with Announcements Button */}
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-3xl font-bold text-slate-900 tracking-tight">Dashboard</h2>
-            <p className="text-slate-500">Welcome back, {user.name}</p>
+            <h2 className="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">Dashboard</h2>
+            <p className="text-sm md:text-base text-slate-500">Welcome back, {user.name}</p>
           </div>
           <Link 
             href="/messages"
@@ -242,7 +242,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4">
           <button 
             type="button" 
             onClick={() => handleQuickAction('/students')}
@@ -306,7 +306,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
           <StatCard 
             title="Total Students" 
             value={stats.totalStudents.toLocaleString()} 
@@ -474,15 +474,15 @@ function StatCard({ title, value, change, icon: Icon, color }: any) {
   };
 
   return (
-    <div className="card-geometric p-6 relative overflow-hidden group">
-      <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">{title}</p>
+    <div className="card-geometric p-4 md:p-6 relative overflow-hidden group">
+      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 md:mb-2">{title}</p>
       <div className="flex items-end justify-between">
-        <h3 className="text-3xl font-bold text-slate-900">{value}</h3>
-        <div className={`p-2 rounded-lg ${colorMap[color] || 'bg-slate-100 text-slate-600'}`}>
-          <Icon className="w-5 h-5" />
+        <h3 className="text-xl md:text-3xl font-bold text-slate-900">{value}</h3>
+        <div className={`p-1.5 md:p-2 rounded-lg ${colorMap[color] || 'bg-slate-100 text-slate-600'}`}>
+          <Icon className="w-4 h-4 md:w-5 h-5" />
         </div>
       </div>
-      <p className={`text-xs font-medium mt-2 ${color === 'rose' ? 'text-rose-500' : 'text-emerald-600'}`}>{change}</p>
+      <p className={`text-[10px] md:text-xs font-medium mt-1 md:mt-2 ${color === 'rose' ? 'text-rose-500' : 'text-emerald-600'}`}>{change}</p>
     </div>
   );
 }

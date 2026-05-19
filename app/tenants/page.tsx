@@ -473,7 +473,7 @@ export default function TenantsPage() {
         <div className="glass-card overflow-hidden">
           <div className="overflow-x-auto">
             {activeTab === 'MANAGEMENT' ? (
-              <table className="w-full text-left border-collapse">
+              <table className="w-full text-left border-collapse min-w-[1000px]">
                 <thead>
                   <tr className="bg-white/5 border-b border-white/10">
                     <th className="p-4 font-semibold text-sm">Company</th>
@@ -582,7 +582,7 @@ export default function TenantsPage() {
                 </tbody>
               </table>
             ) : (
-              <table className="w-full text-left border-collapse">
+              <table className="w-full text-left border-collapse min-w-[1100px]">
                 <thead>
                   <tr className="bg-white/5 border-b border-white/10">
                     <th className="p-4 font-semibold text-sm">Company</th>
@@ -718,12 +718,12 @@ export default function TenantsPage() {
       {/* Onboard/Edit Tenant Modal */}
       <AnimatePresence>
         {isModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm overflow-y-auto">
+          <div className="fixed inset-0 z-50 flex flex-col md:items-center md:justify-center bg-black/80 backdrop-blur-sm overflow-y-auto">
             <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="glass-card w-full max-w-2xl p-8 relative my-8"
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="glass-card w-full max-w-2xl relative min-h-screen md:min-h-0 md:my-8 p-6 md:p-8"
             >
               <button 
                 onClick={() => setIsModalOpen(false)}
@@ -827,12 +827,12 @@ export default function TenantsPage() {
       {/* Tenant Accounts Modal */}
       <AnimatePresence>
         {isAccountsModalOpen && selectedTenantForAccounts && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm overflow-y-auto">
+          <div className="fixed inset-0 z-50 flex flex-col md:items-center md:justify-center bg-black/80 backdrop-blur-sm overflow-y-auto">
             <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="glass-card w-full max-w-4xl p-8 relative my-8"
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="glass-card w-full max-w-4xl relative min-h-screen md:min-h-0 md:my-8 p-6 md:p-8"
             >
               <button 
                 onClick={() => setIsAccountsModalOpen(false)}

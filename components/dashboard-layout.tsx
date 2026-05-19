@@ -6,6 +6,7 @@ import { LayoutDashboard, Users, UserCheck, CreditCard, Bell, LogOut, Menu, X, S
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 import { motion } from 'motion/react';
+import BottomNav from '@/components/bottom-nav';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -90,7 +91,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <motion.aside
         initial={false}
         animate={{ width: isSidebarOpen ? 260 : 80 }}
-        className="bg-slate-900 flex flex-col transition-all overflow-hidden z-20 shadow-xl"
+        className="bg-slate-900 hidden md:flex flex-col transition-all overflow-hidden z-20 shadow-xl"
       >
         <div className="p-6 flex items-center gap-3">
           <div className="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center">
@@ -161,22 +162,27 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </motion.aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col h-screen overflow-hidden">
+      <main className="flex-1 flex flex-col h-screen overflow-hidden pb-20 md:pb-0">
         {/* Header */}
-        <header className="h-20 bg-white border-b border-slate-200 flex items-center justify-between px-8 z-10 shadow-sm">
+        <header className="h-20 bg-white border-b border-slate-200 flex items-center justify-between px-4 md:px-8 z-10 shadow-sm">
           <div className="flex items-center gap-4">
             <button 
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="p-2 hover:bg-slate-50 rounded-lg transition-colors text-slate-400"
+              className="hidden md:flex p-2 hover:bg-slate-50 rounded-lg transition-colors text-slate-400"
             >
               {isSidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
-            <div className="hidden sm:flex items-center gap-2 text-sm text-slate-500">
-              <span className="hover:text-slate-900 cursor-pointer transition-colors">Projects</span>
-              <div className="w-1 h-1 rounded-full bg-slate-300"></div>
-              <span className="text-slate-900 font-semibold uppercase tracking-tight">
-                {user.role === 'super_admin' ? 'Super Admin Panel' : 'REJVET-COACHLEAD'}
-              </span>
+            <div className="flex items-center gap-2">
+              <div className="md:hidden w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center">
+                <ShieldCheck className="w-5 h-5 text-white" />
+              </div>
+              <div className="hidden sm:flex items-center gap-2 text-sm text-slate-500">
+                <span className="hover:text-slate-900 cursor-pointer transition-colors">Projects</span>
+                <div className="w-1 h-1 rounded-full bg-slate-300"></div>
+                <span className="text-slate-900 font-semibold uppercase tracking-tight">
+                  {user.role === 'super_admin' ? 'Super Admin Panel' : 'REJVET-COACHLEAD'}
+                </span>
+              </div>
             </div>
           </div>
 
@@ -202,9 +208,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </header>
 
         {/* Page Content */}
-        <div className="flex-1 overflow-y-auto p-8">
+        <div className="flex-1 overflow-y-auto p-4 md:p-8">
           {children}
         </div>
+        <BottomNav />
       </main>
     </div>
   );

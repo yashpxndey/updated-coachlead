@@ -1,13 +1,14 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  distDir: 'dist',
+  reactStrictMode: false,
   eslint: {
     ignoreDuringBuilds: true
   },
   typescript: {
     ignoreBuildErrors: true
   },
-  reactStrictMode: false,
   images: {
     unoptimized: true,
   },

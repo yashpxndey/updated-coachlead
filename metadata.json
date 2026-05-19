@@ -1,6 +1,6 @@
 {
-  "name": " UPDATED COACHLEAD",
-  "description": "",
+  "name": "CoachLead — Academy Management",
+  "description": "Comprehensive Academy Management System for students, attendance, fees, and results.",
   "requestFramePermissions": [],
-  "majorCapabilities": []
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

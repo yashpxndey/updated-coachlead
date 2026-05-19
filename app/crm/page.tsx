@@ -275,25 +275,25 @@ export default function CRMPage() {
   return (
     <DashboardLayout>
       <div className="h-[calc(100vh-160px)] flex flex-col gap-8">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h2 className="text-3xl font-bold text-slate-900 tracking-tight">Lead Management</h2>
-            <p className="text-slate-500">Track and convert your academy prospects</p>
+            <h2 className="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">Lead Management</h2>
+            <p className="text-sm md:text-base text-slate-500">Track and convert your academy prospects</p>
           </div>
-          <div className="flex items-center gap-3">
-            <div className="relative flex items-center">
+          <div className="flex flex-col sm:flex-row items-center gap-3">
+            <div className="relative flex items-center w-full sm:w-80">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none z-10 shrink-0" />
               <input 
                 type="text" 
                 placeholder="Search prospects..." 
-                className="input-field pl-10 py-2 text-sm w-80 shadow-sm"
+                className="input-field pl-10 py-2 text-base md:text-sm w-full shadow-sm"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
             <button
               onClick={() => setIsModalOpen(true)}
-              className="btn-primary shadow-lg shadow-indigo-100"
+              className="btn-primary w-full sm:w-auto shadow-lg shadow-indigo-100"
             >
               <Plus className="w-4 h-4" />
               Add Lead
@@ -302,9 +302,9 @@ export default function CRMPage() {
         </div>
 
         {/* Kanban Board */}
-        <div className="flex-1 flex gap-6 overflow-x-auto pb-4">
+        <div className="flex-1 flex gap-4 md:gap-6 overflow-x-auto pb-4 snap-x snap-mandatory">
           {COLUMNS.map((column, index) => (
-            <div key={column.id} className="flex-shrink-0 w-80 flex flex-col gap-4">
+            <div key={column.id} className="flex-shrink-0 w-[85vw] md:w-80 flex flex-col gap-4 snap-center">
               <div className="flex items-center justify-between px-2">
                 <div className="flex items-center gap-2">
                   <div className={`w-2 h-2 rounded-full ${index === 0 ? 'bg-indigo-400' : index === 1 ? 'bg-amber-400' : index === 2 ? 'bg-emerald-400' : 'bg-rose-400'}`} />
@@ -461,46 +461,39 @@ export default function CRMPage() {
       {/* Add Lead Modal */}
       <AnimatePresence>
         {isModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsModalOpen(false)}
-              className="absolute inset-0 bg-secondary/80 backdrop-blur-sm"
-            />
+          <div className="fixed inset-0 z-50 flex flex-col md:items-center md:justify-center bg-white md:bg-slate-900/40 md:backdrop-blur-sm overflow-y-auto">
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-lg bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden"
+              className="relative w-full max-w-lg bg-white md:border md:border-slate-200 md:rounded-2xl md:shadow-2xl overflow-hidden min-h-screen md:min-h-0"
             >
-              <div className="p-6 border-b border-slate-100 flex items-center justify-between">
+              <div className="p-6 border-b border-slate-100 flex items-center justify-between sticky top-0 bg-white z-10">
                 <h3 className="text-xl font-bold text-slate-900 tracking-tight">{editingLead ? 'Edit Lead Details' : 'Add New Lead'}</h3>
                 <button onClick={() => { setIsModalOpen(false); setEditingLead(null); }} className="p-2 hover:bg-slate-50 rounded-lg transition-colors text-slate-400">
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
-              <form onSubmit={handleCreateLead} className="p-6 space-y-6">
+              <form onSubmit={handleCreateLead} className="p-4 md:p-6 space-y-4 md:space-y-6">
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">Full Name</label>
-                  <input name="full_name" required className="input-field w-full" defaultValue={editingLead?.full_name || ''} placeholder="John Doe" />
+                  <input name="full_name" required className="input-field w-full text-base md:text-sm" defaultValue={editingLead?.full_name || ''} placeholder="John Doe" />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">Email</label>
-                    <input name="email" type="email" className="input-field w-full" defaultValue={editingLead?.email || ''} placeholder="john@example.com" />
+                    <input name="email" type="email" className="input-field w-full text-base md:text-sm" defaultValue={editingLead?.email || ''} placeholder="john@example.com" />
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">Phone</label>
-                    <input name="phone" className="input-field w-full" defaultValue={editingLead?.phone || ''} placeholder="+1 234..." />
+                    <input name="phone" className="input-field w-full text-base md:text-sm" defaultValue={editingLead?.phone || ''} placeholder="+1 234..." />
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">Source</label>
-                    <select name="source" className="input-field w-full bg-slate-50" defaultValue={editingLead?.source || 'Direct'}>
+                    <select name="source" className="input-field w-full bg-slate-50 text-base md:text-sm" defaultValue={editingLead?.source || 'Direct'}>
                       <option value="Direct">Direct</option>
                       <option value="Instagram">Instagram</option>
                       <option value="Facebook">Facebook</option>
@@ -510,20 +503,20 @@ export default function CRMPage() {
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">Interested Course</label>
-                    <input name="course" className="input-field w-full" defaultValue={editingLead?.course_interested || ''} placeholder="e.g. Mathematics" />
+                    <input name="course" className="input-field w-full text-base md:text-sm" defaultValue={editingLead?.course_interested || ''} placeholder="e.g. Mathematics" />
                   </div>
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">Notes</label>
-                  <textarea name="notes" rows={3} className="input-field w-full resize-none" defaultValue={editingLead?.notes || ''} placeholder="Add some context..."></textarea>
+                  <textarea name="notes" rows={3} className="input-field w-full resize-none text-base md:text-sm" defaultValue={editingLead?.notes || ''} placeholder="Add some context..."></textarea>
                 </div>
                 {editingLead && (
                   <input type="hidden" name="status" value={editingLead.status} />
                 )}
 
-                <div className="pt-4 flex gap-3">
-                  <button type="button" onClick={() => { setIsModalOpen(false); setEditingLead(null); }} className="flex-1 px-6 py-3 bg-slate-50 text-slate-600 font-bold rounded-xl hover:bg-slate-100 transition-all">Cancel</button>
-                  <button type="submit" disabled={isSaving} className="flex-1 px-6 py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 shadow-lg shadow-indigo-100 transition-all disabled:opacity-50">
+                <div className="pt-4 flex flex-col sm:flex-row gap-3">
+                  <button type="button" onClick={() => { setIsModalOpen(false); setEditingLead(null); }} className="flex-1 px-6 py-3 bg-slate-50 text-slate-600 font-bold rounded-xl hover:bg-slate-100 transition-all border border-slate-200 order-2 sm:order-1">Cancel</button>
+                  <button type="submit" disabled={isSaving} className="flex-1 px-6 py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 shadow-lg shadow-indigo-100 transition-all disabled:opacity-50 order-1 sm:order-2">
                     {isSaving ? 'Saving...' : editingLead ? 'Update Lead' : 'Create Lead'}
                   </button>
                 </div>

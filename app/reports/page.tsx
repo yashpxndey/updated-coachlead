@@ -1033,16 +1033,16 @@ export default function ReportsPage() {
         {/* Header & Filters */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-100">
-              <FileText className="w-6 h-6 text-white" />
+            <div className="w-10 h-10 md:w-12 md:h-12 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-100 shrink-0">
+              <FileText className="w-5 h-5 md:w-6 md:h-6 text-white" />
             </div>
             <div>
-              <h2 className="text-3xl font-bold text-slate-900 tracking-tight">Academic Analytics</h2>
-              <p className="text-sm text-slate-500 font-medium">Generate comprehensive performance transcripts and certification records</p>
+              <h2 className="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">Academic Analytics</h2>
+              <p className="text-xs md:text-sm text-slate-500 font-medium">Generate comprehensive performance transcripts and certification records</p>
             </div>
           </div>
           
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col sm:flex-row items-center gap-3">
             {isLoading ? (
               <div className="flex items-center gap-3 px-4 py-2 bg-slate-100 rounded-xl border border-slate-200">
                 <Loader2 className="w-4 h-4 text-indigo-600 animate-spin" />
@@ -1056,16 +1056,16 @@ export default function ReportsPage() {
                     setIsModalOpen(true);
                   }}
                   disabled={!reportData}
-                  className="btn-secondary shadow-sm px-5 py-2.5 flex items-center gap-2 border-slate-200 text-slate-700 bg-white hover:bg-slate-50 disabled:opacity-50"
+                  className="btn-secondary w-full sm:w-auto shadow-sm px-5 py-2.5 flex items-center justify-center gap-2 border-slate-200 text-slate-700 bg-white hover:bg-slate-50 disabled:opacity-50"
                 >
                   <Edit3 className="w-4 h-4 text-indigo-600" />
                   <span className="font-bold">Edit Record</span>
                 </button>
-                <div className="h-8 w-px bg-slate-200 mx-1" />
+                <div className="hidden sm:block h-8 w-px bg-slate-200 mx-1" />
                 <button 
                   onClick={downloadPDF}
                   disabled={!reportData || isDownloading}
-                  className="btn-primary shadow-lg shadow-indigo-100 px-6 py-2.5 flex items-center gap-2 disabled:opacity-50 min-w-[100px] justify-center"
+                  className="btn-primary w-full sm:w-auto shadow-lg shadow-indigo-100 px-6 py-2.5 flex items-center gap-2 disabled:opacity-50 min-w-[100px] justify-center"
                 >
                   {isDownloading ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
@@ -1077,10 +1077,11 @@ export default function ReportsPage() {
                 <button 
                   onClick={downloadXLSX}
                   disabled={!reportData}
-                  className="p-2.5 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-all text-slate-600 hover:text-emerald-600 shadow-sm disabled:opacity-50"
+                  className="w-full sm:w-auto p-2.5 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-all text-slate-600 hover:text-emerald-600 shadow-sm disabled:opacity-50 flex items-center justify-center"
                   title="Export Spreadsheet"
                 >
                   <FileSpreadsheet className="w-5 h-5" />
+                  <span className="sm:hidden font-bold ml-2">Export XLSX</span>
                 </button>
               </>
             )}
@@ -1088,16 +1089,15 @@ export default function ReportsPage() {
         </div>
 
         {/* Filter Bar */}
-        <div className="card-geometric p-5 bg-slate-50/50 border-slate-200 flex flex-wrap items-center gap-5">
-          <div className="w-56">
-            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block ml-1">Department Filter</label>
+        <div className="card-geometric p-4 md:p-5 bg-slate-50/50 border-slate-200 flex flex-col md:flex-row items-stretch md:items-center gap-4 md:gap-5">
+          <div className="flex-1 md:w-56">
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 block ml-1">Department</label>
             <div className="relative group">
-              <BookOpen className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-indigo-600 transition-colors" />
               <select 
                 value={courseFilter}
                 onChange={(e) => setCourseFilter(e.target.value)}
                 disabled={isEditing}
-                className="input-field w-full py-2.5 pl-10 pr-4 bg-white border-slate-200 text-sm font-bold text-slate-900 focus:ring-indigo-500 disabled:opacity-50 appearance-none shadow-sm"
+                className="input-field w-full py-2.5 px-4 bg-white border-slate-200 text-sm font-bold text-slate-900 focus:ring-indigo-500 disabled:opacity-50 appearance-none shadow-sm"
               >
                 <option value="ALL">All Departments</option>
                 {courses.map(c => (
@@ -1107,15 +1107,14 @@ export default function ReportsPage() {
             </div>
           </div>
 
-          <div className="flex-1 min-w-[240px]">
-            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block ml-1">Student Descriptor</label>
+          <div className="flex-[2] min-w-0">
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 block ml-1">Student</label>
             <div className="relative group">
-              <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-indigo-600 transition-colors" />
               <select 
                 value={selectedStudentId}
                 onChange={(e) => setSelectedStudentId(e.target.value)}
                 disabled={isEditing}
-                className="input-field w-full py-2.5 pl-10 pr-4 bg-white border-slate-200 text-sm font-bold text-slate-900 focus:ring-indigo-500 disabled:opacity-50 appearance-none shadow-sm"
+                className="input-field w-full py-2.5 px-4 bg-white border-slate-200 text-sm font-bold text-slate-900 focus:ring-indigo-500 disabled:opacity-50 appearance-none shadow-sm"
               >
                 {filteredStudents.map(s => (
                   <option key={s.id} value={s.id}>{s.full_name} ({s.enrollment_number})</option>
@@ -1124,29 +1123,27 @@ export default function ReportsPage() {
             </div>
           </div>
 
-          <div className="w-44">
-            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block ml-1">Reporting Cycle</label>
+          <div className="flex-1">
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 block ml-1">Reporting Cycle</label>
             <div className="flex gap-2">
               <div className="relative flex-1 group">
-                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 group-focus-within:text-indigo-600 transition-colors" />
                 <select 
                   value={selectedMonth}
                   onChange={(e) => setSelectedMonth(e.target.value)}
                   disabled={isEditing}
-                  className="input-field w-full py-2.5 pl-8 pr-4 bg-white border-slate-200 text-xs font-bold text-slate-900 focus:ring-indigo-500 disabled:opacity-50 appearance-none shadow-sm"
+                  className="input-field w-full py-2.5 px-3 bg-white border-slate-200 text-[11px] font-bold text-slate-900 focus:ring-indigo-500 disabled:opacity-50 appearance-none shadow-sm"
                 >
                   {MONTHS.map(m => (
                     <option key={m} value={m}>{m.slice(0, 3)}</option>
                   ))}
                 </select>
               </div>
-              <div className="relative w-24 group">
-                <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 group-focus-within:text-indigo-600 transition-colors" />
+              <div className="relative w-20 group">
                 <select 
                   value={selectedYear}
                   onChange={(e) => setSelectedYear(e.target.value)}
                   disabled={isEditing}
-                  className="input-field w-full py-2.5 pl-8 pr-4 bg-white border-slate-200 text-xs font-bold text-slate-900 focus:ring-indigo-500 disabled:opacity-50 appearance-none shadow-sm"
+                  className="input-field w-full py-2.5 px-3 bg-white border-slate-200 text-[11px] font-bold text-slate-900 focus:ring-indigo-500 disabled:opacity-50 appearance-none shadow-sm"
                 >
                   {YEARS.map(y => (
                     <option key={y} value={y}>{y}</option>
@@ -1330,7 +1327,7 @@ export default function ReportsPage() {
               </button>
 
               <div className="overflow-x-auto mt-4 rounded-xl border border-slate-100">
-                <table className="w-full text-left">
+                <table className="w-full text-left min-w-[800px]">
                   <thead>
                     <tr className="bg-slate-50 border-b border-slate-200">
                       <th className="py-4 px-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Curriculum Module</th>
@@ -1787,12 +1784,12 @@ export default function ReportsPage() {
       {/* Edit Report Modal */}
       <AnimatePresence>
         {isModalOpen && editedData && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto">
+          <div className="fixed inset-0 z-50 flex flex-col md:items-center md:justify-center bg-slate-900/80 backdrop-blur-sm overflow-y-auto">
             <motion.div 
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="card-geometric w-full max-w-4xl p-8 bg-white relative my-8"
+              className="card-geometric w-full max-w-4xl bg-white relative min-h-screen md:min-h-0 md:my-8 p-6 md:p-8"
             >
               <button 
                 onClick={() => setIsModalOpen(false)}

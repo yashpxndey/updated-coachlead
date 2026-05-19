@@ -17,6 +17,20 @@ type FeeRecord = Database['public']['Tables']['fees']['Row'] & {
   } | null;
 };
 
+function FeeStat({ title, value, icon: Icon, color, bg }: any) {
+  return (
+    <div className="card-geometric p-4 md:p-6 flex items-center justify-between bg-white border-slate-200 shadow-sm transition-all hover:shadow-md hover:border-indigo-100 group">
+      <div>
+        <p className="text-[8px] md:text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-1">{title}</p>
+        <p className="text-xl md:text-2xl font-bold text-slate-900 tracking-tight">{value}</p>
+      </div>
+      <div className={`w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110 ${bg}`}>
+        <Icon className={`w-5 h-5 md:w-6 md:h-6 ${color}`} />
+      </div>
+    </div>
+  );
+}
+
 export default function FeesPage() {
   const [fees, setFees] = useState<FeeRecord[]>([]);
   const [students, setStudents] = useState<{ id: string; full_name: string }[]>([]);
@@ -372,30 +386,30 @@ export default function FeesPage() {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
           <FeeStat 
-            title="Revenue Ledger" 
+            title="Revenue" 
             value={`₹${stats.collectedMonth.toLocaleString()}`} 
             icon={CheckCircle2} 
             color="text-emerald-600" 
             bg="bg-emerald-50" 
           />
           <FeeStat 
-            title="Pending Dues" 
+            title="Pending" 
             value={`₹${stats.pendingDues.toLocaleString()}`} 
             icon={IndianRupee} 
             color="text-indigo-600" 
             bg="bg-indigo-50" 
           />
           <FeeStat 
-            title="Overdue Alerts" 
+            title="Overdue" 
             value={stats.overdueCount.toString()} 
             icon={AlertTriangle} 
             color="text-rose-600" 
             bg="bg-rose-50" 
           />
           <FeeStat 
-            title="7-Day Projection" 
+            title="Upcoming" 
             value={`₹${stats.upcoming7Days.toLocaleString()}`} 
             icon={CreditCard} 
             color="text-amber-600" 
@@ -440,7 +454,7 @@ export default function FeesPage() {
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-left">
+            <table className="w-full text-left min-w-[1000px]">
               <thead>
                 <tr className="bg-slate-50 border-b border-slate-100">
                   <th className="p-4 px-6 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Enrolled Student</th>
@@ -526,16 +540,15 @@ export default function FeesPage() {
           </div>
         </div>
       </div>
-
-      {/* Fee Structure Modal */}
+         {/* Fee Structure Modal */}
       <AnimatePresence>
         {selectedStudentStructure && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-[2px]">
+          <div className="fixed inset-0 z-50 flex flex-col md:items-center md:justify-center bg-white md:bg-slate-900/40 md:backdrop-blur-sm overflow-y-auto">
             <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              className="card-geometric w-full max-w-md p-8 relative bg-white border-slate-200 shadow-2xl"
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="bg-white md:rounded-2xl md:shadow-2xl md:border md:border-slate-200 w-full max-w-md relative min-h-screen md:min-h-0 md:my-8 overflow-hidden p-6 md:p-8"
             >
               <button 
                 onClick={() => setSelectedStudentStructure(null)}
@@ -544,40 +557,40 @@ export default function FeesPage() {
                 <X className="w-5 h-5" />
               </button>
               
-              <div className="mb-8">
-                <div className="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center mb-4">
-                  <FileText className="w-6 h-6 text-indigo-600" />
+              <div className="mb-6 md:mb-8">
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-indigo-50 rounded-xl flex items-center justify-center mb-4">
+                  <FileText className="w-5 h-5 md:w-6 md:h-6 text-indigo-600" />
                 </div>
-                <h3 className="text-2xl font-bold text-slate-900 tracking-tight">Ledger Analysis</h3>
-                <p className="text-slate-500 font-medium">{selectedStudentStructure.students?.full_name}</p>
+                <h3 className="text-xl md:text-2xl font-bold text-slate-900 tracking-tight">Ledger Analysis</h3>
+                <p className="text-sm text-slate-500 font-medium">{selectedStudentStructure.students?.full_name}</p>
               </div>
               
-              <div className="space-y-3">
-                <div className="flex justify-between p-4 rounded-xl bg-slate-50 border border-slate-100">
-                  <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Total Liability</span>
-                  <span className="font-bold text-slate-900 tracking-tight">₹{selectedStudentStructure.total_fee}</span>
+              <div className="space-y-2 md:space-y-3">
+                <div className="flex justify-between p-3 md:p-4 rounded-xl bg-slate-50 border border-slate-100">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total Liability</span>
+                  <span className="text-sm md:text-base font-bold text-slate-900 tracking-tight">₹{selectedStudentStructure.total_fee}</span>
                 </div>
-                <div className="flex justify-between p-4 rounded-xl bg-slate-50 border border-slate-100">
-                  <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Enrollment Fee</span>
-                  <span className="font-bold text-slate-900 tracking-tight">₹{selectedStudentStructure.enrollment_fee || 0}</span>
+                <div className="flex justify-between p-3 md:p-4 rounded-xl bg-slate-50 border border-slate-100">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Enrollment Fee</span>
+                  <span className="text-sm md:text-base font-bold text-slate-900 tracking-tight">₹{selectedStudentStructure.enrollment_fee || 0}</span>
                 </div>
-                <div className="flex justify-between p-4 rounded-xl bg-indigo-50/50 border border-indigo-100">
-                  <span className="text-xs font-bold text-indigo-600 uppercase tracking-widest">Settled Amount</span>
-                  <span className="font-bold text-indigo-600 tracking-tight">₹{selectedStudentStructure.amount_paid}</span>
+                <div className="flex justify-between p-3 md:p-4 rounded-xl bg-indigo-50/50 border border-indigo-100">
+                  <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-widest">Settled Amount</span>
+                  <span className="text-sm md:text-base font-bold text-indigo-600 tracking-tight">₹{selectedStudentStructure.amount_paid}</span>
                 </div>
-                <div className="flex justify-between p-4 rounded-xl bg-rose-50 border border-rose-100">
-                  <span className="text-xs font-bold text-rose-600 uppercase tracking-widest">Current Balance</span>
-                  <span className="font-bold text-rose-600 tracking-tight">₹{selectedStudentStructure.amount_pending}</span>
+                <div className="flex justify-between p-3 md:p-4 rounded-xl bg-rose-50 border border-rose-100">
+                  <span className="text-[10px] font-bold text-rose-600 uppercase tracking-widest">Current Balance</span>
+                  <span className="text-sm md:text-base font-bold text-rose-600 tracking-tight">₹{selectedStudentStructure.amount_pending}</span>
                 </div>
-                <div className="flex justify-between p-4 rounded-xl bg-slate-50 border border-slate-100">
-                  <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Installments</span>
-                  <span className="font-bold text-slate-900 tracking-tight">{selectedStudentStructure.installments_paid} / {selectedStudentStructure.installments_paid + (selectedStudentStructure.installments_pending || 0)}</span>
+                <div className="flex justify-between p-3 md:p-4 rounded-xl bg-slate-50 border border-slate-100">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Installments</span>
+                  <span className="text-sm md:text-base font-bold text-slate-900 tracking-tight">{selectedStudentStructure.installments_paid} / {selectedStudentStructure.installments_paid + (selectedStudentStructure.installments_pending || 0)}</span>
                 </div>
               </div>
               
               <button 
                 onClick={() => setSelectedStudentStructure(null)}
-                className="btn-primary w-full mt-8 py-3.5 shadow-lg shadow-indigo-100 font-bold tracking-tight"
+                className="btn-primary w-full mt-6 md:mt-8 py-3.5 shadow-lg shadow-indigo-100 font-bold tracking-tight"
               >
                 Close Ledger Analysis
               </button>
@@ -589,12 +602,12 @@ export default function FeesPage() {
       {/* Record Payment Modal */}
       <AnimatePresence>
         {isRecordModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-[2px]">
+          <div className="fixed inset-0 z-50 flex flex-col md:items-center md:justify-center bg-white md:bg-slate-900/40 md:backdrop-blur-sm overflow-y-auto">
             <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              className="card-geometric w-full max-w-lg p-8 relative bg-white border-slate-200 shadow-2xl"
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="bg-white md:rounded-2xl md:shadow-2xl md:border md:border-slate-200 w-full max-w-lg relative min-h-screen md:min-h-0 md:my-8 overflow-hidden p-6 md:p-8"
             >
               <button 
                 onClick={() => setIsRecordModalOpen(false)}
@@ -603,21 +616,21 @@ export default function FeesPage() {
                 <X className="w-5 h-5" />
               </button>
               
-              <div className="mb-8">
-                <div className="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center mb-4">
-                  <Plus className="w-6 h-6 text-emerald-600" />
+              <div className="mb-6 md:mb-8">
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-emerald-50 rounded-xl flex items-center justify-center mb-4">
+                  <Plus className="w-5 h-5 md:w-6 md:h-6 text-emerald-600" />
                 </div>
-                <h3 className="text-2xl font-bold text-slate-900 tracking-tight">Post Ledger Payment</h3>
-                <p className="text-slate-500 font-medium">Record a new payment transaction with geometric precision.</p>
+                <h3 className="text-xl md:text-2xl font-bold text-slate-900 tracking-tight">Post Ledger Payment</h3>
+                <p className="text-sm text-slate-500 font-medium">Record a new payment transaction with geometric precision.</p>
               </div>
               
-              <form onSubmit={handleRecordPayment} className="space-y-5">
+              <form onSubmit={handleRecordPayment} className="space-y-4 md:space-y-5">
                 <div className="space-y-2">
                   <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Student Beneficiary</label>
                   <select 
                     name="student_id" 
                     required 
-                    className="input-field w-full bg-white text-slate-900 font-bold border-slate-200"
+                    className="input-field w-full bg-white text-slate-900 font-bold border-slate-200 text-base md:text-sm"
                     onChange={(e) => {
                       const studentId = e.target.value;
                       const fee = fees.find(f => f.student_id === studentId);
@@ -629,14 +642,14 @@ export default function FeesPage() {
                   </select>
                 </div>
                 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Total Liability (₹)</label>
                     <input 
                       name="total_fee" 
                       type="number" 
                       required 
-                      className="input-field w-full bg-slate-50 border-slate-200 font-bold" 
+                      className="input-field w-full bg-slate-50 border-slate-200 font-bold text-base md:text-sm" 
                       placeholder="0.00" 
                       defaultValue={selectedFeeForPayment?.total_fee || 0}
                     />
@@ -647,27 +660,27 @@ export default function FeesPage() {
                       name="enrollment_fee" 
                       type="number" 
                       required
-                      className="input-field w-full bg-slate-50 border-slate-200 font-bold" 
+                      className="input-field w-full bg-slate-50 border-slate-200 font-bold text-base md:text-sm" 
                       placeholder="0.00" 
                       defaultValue={selectedFeeForPayment?.enrollment_fee || 0}
                     />
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Transaction Value (₹)</label>
-                    <input name="amount" type="number" required className="input-field w-full bg-white border-slate-200 font-bold text-emerald-600 focus:ring-emerald-500" placeholder="0.00" defaultValue={0} />
+                    <input name="amount" type="number" required className="input-field w-full bg-white border-slate-200 font-bold text-emerald-600 focus:ring-emerald-500 text-base md:text-sm" placeholder="0.00" defaultValue={0} />
                   </div>
                   <div className="space-y-2">
                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Instrument Date</label>
-                    <input name="date" type="date" required className="input-field w-full bg-white border-slate-200" defaultValue={new Date().toISOString().split('T')[0]} />
+                    <input name="date" type="date" required className="input-field w-full bg-white border-slate-200 text-base md:text-sm" defaultValue={new Date().toISOString().split('T')[0]} />
                   </div>
                 </div>
                 
                 <div className="space-y-2">
                   <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Settlement Method</label>
-                  <select name="method" required className="input-field w-full bg-white text-slate-900 border-slate-200 font-medium">
+                  <select name="method" required className="input-field w-full bg-white text-slate-900 border-slate-200 font-medium text-base md:text-sm">
                     <option value="CASH">Currency / Cash</option>
                     <option value="BANK">Bank Ledger Transfer</option>
                     <option value="ONLINE">Digital Payment Gateway</option>
@@ -676,12 +689,12 @@ export default function FeesPage() {
                 
                 <div className="space-y-2">
                   <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Transaction Manifest (Optional)</label>
-                  <textarea name="notes" className="input-field w-full h-24 resize-none bg-white border-slate-200 text-sm" placeholder="Add relevant transaction identifiers or notes..."></textarea>
+                  <textarea name="notes" className="input-field w-full h-24 resize-none bg-white border-slate-200 text-base md:text-sm" placeholder="Add relevant transaction identifiers or notes..."></textarea>
                 </div>
 
-                <div className="flex justify-end gap-3 mt-8">
-                  <button type="button" onClick={() => setIsRecordModalOpen(false)} className="btn-secondary px-6 font-bold shadow-sm">Cancel</button>
-                  <button type="submit" disabled={isSaving} className="btn-primary px-10 font-bold shadow-lg shadow-indigo-100">
+                <div className="flex flex-col sm:flex-row justify-end gap-3 mt-6">
+                  <button type="button" onClick={() => setIsRecordModalOpen(false)} className="btn-secondary w-full sm:w-auto px-6 font-bold shadow-sm order-2 sm:order-1">Cancel</button>
+                  <button type="submit" disabled={isSaving} className="btn-primary w-full sm:w-auto px-10 font-bold shadow-lg shadow-indigo-100 order-1 sm:order-2">
                     {isSaving ? 'Processing Ledger...' : 'Post Payment'}
                   </button>
                 </div>
@@ -691,19 +704,5 @@ export default function FeesPage() {
         )}
       </AnimatePresence>
     </DashboardLayout>
-  );
-}
-
-function FeeStat({ title, value, icon: Icon, color, bg }: any) {
-  return (
-    <div className="card-geometric p-6 flex items-center justify-between bg-white border-slate-200 shadow-sm transition-all hover:shadow-md hover:border-indigo-100 group">
-      <div>
-        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-1">{title}</p>
-        <p className="text-2xl font-bold text-slate-900 tracking-tight">{value}</p>
-      </div>
-      <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110 ${bg}`}>
-        <Icon className={`w-6 h-6 ${color}`} />
-      </div>
-    </div>
   );
 }

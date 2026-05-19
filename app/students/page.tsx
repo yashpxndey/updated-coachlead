@@ -338,11 +338,11 @@ export default function StudentsPage() {
         {/* Header Actions */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h2 className="text-3xl font-bold text-slate-900 tracking-tight">Student Directory</h2>
-            <p className="text-slate-500">Manage and monitor all students in your academy</p>
+            <h2 className="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">Student Directory</h2>
+            <p className="text-sm md:text-base text-slate-500">Manage and monitor all students in your academy</p>
           </div>
-          <div className="flex items-center gap-3">
-            <button onClick={exportPDF} className="btn-secondary shadow-sm">
+          <div className="flex flex-col sm:flex-row items-center gap-3">
+            <button onClick={exportPDF} className="btn-secondary w-full sm:w-auto shadow-sm">
               <FileDown className="w-4 h-4" />
               Export PDF
             </button>
@@ -353,7 +353,7 @@ export default function StudentsPage() {
                 setEnrollmentNumber(generateEnrollmentNumber());
                 setIsModalOpen(true); 
               }} 
-              className="btn-primary shadow-lg shadow-indigo-100"
+              className="btn-primary w-full sm:w-auto shadow-lg shadow-indigo-100"
             >
               <Plus className="w-4 h-4" />
               Add Student
@@ -427,7 +427,7 @@ export default function StudentsPage() {
         {/* Students Table */}
         <div className="card-geometric overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+            <table className="w-full text-left border-collapse min-w-[900px]">
               <thead>
                 <tr className="bg-slate-50 border-b border-slate-100">
                   <th className="p-4 px-6 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Student Details</th>
@@ -552,15 +552,15 @@ export default function StudentsPage() {
       {/* Add/Edit Student Modal */}
       <AnimatePresence>
         {isModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm overflow-y-auto">
+          <div className="fixed inset-0 z-50 flex flex-col md:items-center md:justify-center bg-white md:bg-slate-900/40 md:backdrop-blur-sm overflow-y-auto">
             <motion.div 
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-4xl relative my-8 overflow-hidden"
+              className="bg-white md:rounded-2xl md:shadow-2xl md:border md:border-slate-200 w-full max-w-4xl relative min-h-screen md:min-h-0 md:my-8 overflow-hidden"
             >
-              <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-                <h3 className="text-2xl font-bold tracking-tight text-slate-900">
+              <div className="sticky top-0 z-20 p-6 border-b border-slate-100 flex items-center justify-between bg-white md:bg-slate-50/50">
+                <h3 className="text-xl md:text-2xl font-bold tracking-tight text-slate-900">
                   {editingStudent ? 'Edit Student Details' : 'Student Enrollment'}
                 </h3>
                 <button 
@@ -571,7 +571,7 @@ export default function StudentsPage() {
                 </button>
               </div>
               
-              <form onSubmit={handleSaveStudent} className="p-8 space-y-10 max-h-[80vh] overflow-y-auto custom-scrollbar">
+              <form onSubmit={handleSaveStudent} className="p-4 md:p-8 space-y-8 md:space-y-10 md:max-h-[80vh] overflow-y-auto custom-scrollbar">
                 {/* Section: Profile Photo */}
                 <div className="flex flex-col items-center gap-4 py-4">
                   <div className="relative group">
@@ -614,21 +614,21 @@ export default function StudentsPage() {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div className="space-y-1.5">
                       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Full Name</label>
-                      <input name="full_name" type="text" required defaultValue={editingStudent?.full_name} className="input-field w-full" placeholder="John Doe" />
+                      <input name="full_name" type="text" required defaultValue={editingStudent?.full_name} className="input-field w-full text-base md:text-sm" placeholder="John Doe" />
                     </div>
                     <div className="space-y-1.5">
                       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Email Address</label>
-                      <input name="email" type="email" required defaultValue={editingStudent?.email || ''} className="input-field w-full" placeholder="john@example.com" />
+                      <input name="email" type="email" required defaultValue={editingStudent?.email || ''} className="input-field w-full text-base md:text-sm" placeholder="john@example.com" />
                     </div>
                     <div className="space-y-1.5">
                       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Date of Birth</label>
                       <div className="relative">
-                        <input name="date_of_birth" type="date" required defaultValue={editingStudent?.date_of_birth || ''} className="input-field w-full" />
+                        <input name="date_of_birth" type="date" required defaultValue={editingStudent?.date_of_birth || ''} className="input-field w-full text-base md:text-sm" />
                       </div>
                     </div>
                     <div className="space-y-1.5">
                       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Gender</label>
-                      <select name="gender" required defaultValue={editingStudent?.gender || ''} className="input-field w-full bg-slate-50">
+                      <select name="gender" required defaultValue={editingStudent?.gender || ''} className="input-field w-full bg-slate-50 text-base md:text-sm">
                         <option value="">Select Gender</option>
                         <option value="Male">Male</option>
                         <option value="Female">Female</option>
@@ -637,7 +637,7 @@ export default function StudentsPage() {
                     </div>
                     <div className="space-y-1.5">
                       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Blood Group</label>
-                      <select name="blood_group" required defaultValue={editingStudent?.blood_group || ''} className="input-field w-full bg-slate-50">
+                      <select name="blood_group" required defaultValue={editingStudent?.blood_group || ''} className="input-field w-full bg-slate-50 text-base md:text-sm">
                         <option value="">Select</option>
                         <option value="A+">A+</option>
                         <option value="A-">A-</option>
@@ -651,7 +651,7 @@ export default function StudentsPage() {
                     </div>
                     <div className="space-y-1.5">
                       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Emergency Contact</label>
-                      <input name="emergency_contact" type="text" required defaultValue={editingStudent?.emergency_contact || ''} className="input-field w-full" placeholder="+1 999..." />
+                      <input name="emergency_contact" type="text" required defaultValue={editingStudent?.emergency_contact || ''} className="input-field w-full text-base md:text-sm" placeholder="+1 999..." />
                     </div>
                   </div>
                 </div>
@@ -668,7 +668,7 @@ export default function StudentsPage() {
                     <div className="space-y-1.5">
                       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Enrolled Course</label>
                       <div className="relative">
-                        <select name="course_name" required defaultValue={editingStudent?.course_name} className="input-field w-full bg-slate-50 text-slate-900 font-medium">
+                        <select name="course_name" required defaultValue={editingStudent?.course_name} className="input-field w-full bg-slate-50 text-slate-900 font-medium text-base md:text-sm">
                           <option value="">Select Course</option>
                           {courses.map(course => (
                             <option key={course.id} value={course.course_name}>{course.course_name}</option>
@@ -678,20 +678,20 @@ export default function StudentsPage() {
                     </div>
                     <div className="space-y-1.5">
                       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Batch Schedule</label>
-                      <input name="batch_time" type="text" required defaultValue={editingStudent?.batch_time} className="input-field w-full" placeholder="e.g. 09:00 AM - 11:00 AM" />
+                      <input name="batch_time" type="text" required defaultValue={editingStudent?.batch_time} className="input-field w-full text-base md:text-sm" placeholder="e.g. 09:00 AM - 11:00 AM" />
                     </div>
                     <div className="space-y-1.5">
                       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Join Date</label>
                       <div className="relative">
-                        <input name="joining_date" type="date" required defaultValue={editingStudent?.joining_date || ''} className="input-field w-full" />
+                        <input name="joining_date" type="date" required defaultValue={editingStudent?.joining_date || ''} className="input-field w-full text-base md:text-sm" />
                       </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="flex justify-end gap-4 pt-6 border-t border-slate-100">
-                  <button type="button" onClick={() => setIsModalOpen(false)} className="btn-secondary px-8">Discard</button>
-                  <button type="submit" disabled={isSaving} className="btn-primary px-10 shadow-lg shadow-indigo-100">
+                <div className="flex flex-col md:flex-row justify-end gap-3 md:gap-4 md:pt-6 border-t border-slate-100">
+                  <button type="button" onClick={() => setIsModalOpen(false)} className="btn-secondary w-full md:w-auto px-8 order-2 md:order-1">Discard</button>
+                  <button type="submit" disabled={isSaving} className="btn-primary w-full md:w-auto px-10 shadow-lg shadow-indigo-100 order-1 md:order-2">
                     {isSaving ? 'Processing...' : (editingStudent ? 'Update Details' : 'Complete Enrollment')}
                   </button>
                 </div>
